@@ -9,7 +9,7 @@ import type {
     CommunicationDetailsState
 } from './types'
 import { RegistrationOverview } from './components/RegistrationOverview'
-import { StepSidebar } from './components/StepSidebar'
+import { TopStepWizard } from './components/TopStepWizard'
 import { Step1ApplicantDetails } from './steps/Step1ApplicantDetails'
 import { Step2ParentDetails } from './steps/Step2ParentDetails'
 import { Step3GuardianDetails } from './steps/Step3GuardianDetails'
@@ -271,136 +271,131 @@ export default function HomeModule() {
                 />
             )}
 
-            {/* MODE 2: SEPARATE STEP FORM SCREEN */}
+            {/* MODE 2: SEPARATE STEP FORM SCREEN WITH TOP STEP WIZARD */}
             {viewMode === 'stepForm' && (
                 <div className="space-y-5">
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+                    {/* Top Wizard Stepper */}
+                    <TopStepWizard
+                        steps={steps}
+                        activeStepId={activeStepId}
+                        completedStepIds={completedStepIds}
+                        onBackToDashboard={() => setViewMode('overview')}
+                        onStepSelect={(id) => setActiveStepId(id)}
+                    />
 
-                        {/* Left Steps Progress Sidebar */}
-                        <div className="lg:col-span-3">
-                            <StepSidebar
-                                steps={steps}
-                                activeStepId={activeStepId}
-                                completedStepIds={completedStepIds}
-                                onBackToDashboard={() => setViewMode('overview')}
-                                onStepSelect={(id) => setActiveStepId(id)}
+                    {/* Step Form Workspace */}
+                    <div className="space-y-5">
+                        <h1 className="text-lg font-bold text-[#0F294A] dark:text-white">{steps[activeStepId - 1].title}</h1>
+
+                        {activeStepId === 1 && (
+                            <Step1ApplicantDetails
+                                childName={childName}
+                                setChildName={setChildName}
+                                dob={dob}
+                                setDob={setDob}
+                                gender={gender}
+                                setGender={setGender}
+                                motherTongue={motherTongue}
+                                setMotherTongue={setMotherTongue}
+                                nationality={nationality}
+                                setNationality={setNationality}
+                                religion={religion}
+                                setReligion={setReligion}
+                                caste={caste}
+                                setCaste={setCaste}
+                                community={community}
+                                setCommunity={setCommunity}
+                                isHealthy={isHealthy}
+                                setIsHealthy={setIsHealthy}
+                                majorAilment={majorAilment}
+                                setMajorAilment={setMajorAilment}
+                                childGoesToSchool={childGoesToSchool}
+                                setChildGoesToSchool={setChildGoesToSchool}
+                                prevSchool={prevSchool}
+                                setPrevSchool={setPrevSchool}
+                                hasSiblings={hasSiblings}
+                                setHasSiblings={setHasSiblings}
+                                siblings={siblings}
+                                addSibling={addSibling}
+                                removeSibling={removeSibling}
+                                updateSibling={updateSibling}
+                                onSaveAndExit={() => setViewMode('overview')}
+                                onSaveAndNext={() => handleSaveAndNext(1)}
                             />
-                        </div>
+                        )}
 
-                        {/* Right Step Form Workspace */}
-                        <div className="lg:col-span-9 space-y-5">
-                            <h1 className="text-lg font-bold text-[#0F294A] dark:text-white">{steps[activeStepId - 1].title}</h1>
+                        {activeStepId === 2 && (
+                            <Step2ParentDetails
+                                father={father}
+                                setFather={setFather}
+                                mother={mother}
+                                setMother={setMother}
+                                onClear={() => {
+                                    setFather({
+                                        title: '', initials: '', name: '', dob: '', isAlumnus: false, yearsStudied: '',
+                                        classLastStudied: '', yearOfLeaving: '', branch: '', reasonForLeaving: '', qualification: '',
+                                        university: '', occupation: '', employmentCategory: '', designation: '', companyName: '',
+                                        officeAddress: '', monthlyIncome: '', phoneOff: '', mobileNo: ''
+                                    })
+                                    setMother({
+                                        title: '', initials: '', name: '', dob: '', isAlumnus: false, yearsStudied: '',
+                                        classLastStudied: '', yearOfLeaving: '', branch: '', reasonForLeaving: '', qualification: '',
+                                        university: '', isEmployed: false, occupation: '', employmentCategory: '', designation: '',
+                                        companyName: '', officeAddress: '', monthlyIncome: '', phoneOff: '', mobileNo: ''
+                                    })
+                                    toast.info('Parent details cleared')
+                                }}
+                                onSaveAndExit={() => setViewMode('overview')}
+                                onSaveAndNext={() => handleSaveAndNext(2)}
+                            />
+                        )}
 
-                            {activeStepId === 1 && (
-                                <Step1ApplicantDetails
-                                    childName={childName}
-                                    setChildName={setChildName}
-                                    dob={dob}
-                                    setDob={setDob}
-                                    gender={gender}
-                                    setGender={setGender}
-                                    motherTongue={motherTongue}
-                                    setMotherTongue={setMotherTongue}
-                                    nationality={nationality}
-                                    setNationality={setNationality}
-                                    religion={religion}
-                                    setReligion={setReligion}
-                                    caste={caste}
-                                    setCaste={setCaste}
-                                    community={community}
-                                    setCommunity={setCommunity}
-                                    isHealthy={isHealthy}
-                                    setIsHealthy={setIsHealthy}
-                                    majorAilment={majorAilment}
-                                    setMajorAilment={setMajorAilment}
-                                    childGoesToSchool={childGoesToSchool}
-                                    setChildGoesToSchool={setChildGoesToSchool}
-                                    prevSchool={prevSchool}
-                                    setPrevSchool={setPrevSchool}
-                                    hasSiblings={hasSiblings}
-                                    setHasSiblings={setHasSiblings}
-                                    siblings={siblings}
-                                    addSibling={addSibling}
-                                    removeSibling={removeSibling}
-                                    updateSibling={updateSibling}
-                                    onSaveAndExit={() => setViewMode('overview')}
-                                    onSaveAndNext={() => handleSaveAndNext(1)}
-                                />
-                            )}
+                        {activeStepId === 3 && (
+                            <Step3GuardianDetails
+                                guardian={guardian}
+                                setGuardian={setGuardian}
+                                onClear={() => {
+                                    setGuardian({
+                                        isApplicable: false, reason: '', gender: '', title: '', initials: '', name: '',
+                                        isEmployed: false, occupation: '', companyName: '', monthlyIncome: '', officeAddress: '',
+                                        phoneOff: '', phoneRes: '', mobileNo: ''
+                                    })
+                                    toast.info('Guardian details cleared')
+                                }}
+                                onSaveAndExit={() => setViewMode('overview')}
+                                onSaveAndNext={() => handleSaveAndNext(3)}
+                            />
+                        )}
 
-                            {activeStepId === 2 && (
-                                <Step2ParentDetails
-                                    father={father}
-                                    setFather={setFather}
-                                    mother={mother}
-                                    setMother={setMother}
-                                    onClear={() => {
-                                        setFather({
-                                            title: '', initials: '', name: '', dob: '', isAlumnus: false, yearsStudied: '',
-                                            classLastStudied: '', yearOfLeaving: '', branch: '', reasonForLeaving: '', qualification: '',
-                                            university: '', occupation: '', employmentCategory: '', designation: '', companyName: '',
-                                            officeAddress: '', monthlyIncome: '', phoneOff: '', mobileNo: ''
-                                        })
-                                        setMother({
-                                            title: '', initials: '', name: '', dob: '', isAlumnus: false, yearsStudied: '',
-                                            classLastStudied: '', yearOfLeaving: '', branch: '', reasonForLeaving: '', qualification: '',
-                                            university: '', isEmployed: false, occupation: '', employmentCategory: '', designation: '',
-                                            companyName: '', officeAddress: '', monthlyIncome: '', phoneOff: '', mobileNo: ''
-                                        })
-                                        toast.info('Parent details cleared')
-                                    }}
-                                    onSaveAndExit={() => setViewMode('overview')}
-                                    onSaveAndNext={() => handleSaveAndNext(2)}
-                                />
-                            )}
+                        {activeStepId === 4 && (
+                            <Step4CommunicationDetails
+                                comm={comm}
+                                setComm={setComm}
+                                onClear={() => {
+                                    setComm({
+                                        address: '', pincode: '', residencePhone: '', landmark: '', distanceKm: '',
+                                        commuteMode: [], parentAchievements: '', isTransferFromOutside: false
+                                    })
+                                    toast.info('Communication details cleared')
+                                }}
+                                onSaveAndExit={() => setViewMode('overview')}
+                                onSaveAndNext={() => handleSaveAndNext(4)}
+                            />
+                        )}
 
-                            {activeStepId === 3 && (
-                                <Step3GuardianDetails
-                                    guardian={guardian}
-                                    setGuardian={setGuardian}
-                                    onClear={() => {
-                                        setGuardian({
-                                            isApplicable: false, reason: '', gender: '', title: '', initials: '', name: '',
-                                            isEmployed: false, occupation: '', companyName: '', monthlyIncome: '', officeAddress: '',
-                                            phoneOff: '', phoneRes: '', mobileNo: ''
-                                        })
-                                        toast.info('Guardian details cleared')
-                                    }}
-                                    onSaveAndExit={() => setViewMode('overview')}
-                                    onSaveAndNext={() => handleSaveAndNext(3)}
-                                />
-                            )}
+                        {activeStepId === 5 && (
+                            <Step5Declaration
+                                declarantType={declarantType}
+                                setDeclarantType={setDeclarantType}
+                                childName={childName}
+                                setChildName={setChildName}
+                                isDeclared={isDeclared}
+                                setIsDeclared={setIsDeclared}
+                                onSaveAndExit={() => setViewMode('overview')}
+                                onSaveAndNext={() => handleSaveAndNext(5)}
+                            />
+                        )}
 
-                            {activeStepId === 4 && (
-                                <Step4CommunicationDetails
-                                    comm={comm}
-                                    setComm={setComm}
-                                    onClear={() => {
-                                        setComm({
-                                            address: '', pincode: '', residencePhone: '', landmark: '', distanceKm: '',
-                                            commuteMode: [], parentAchievements: '', isTransferFromOutside: false
-                                        })
-                                        toast.info('Communication details cleared')
-                                    }}
-                                    onSaveAndExit={() => setViewMode('overview')}
-                                    onSaveAndNext={() => handleSaveAndNext(4)}
-                                />
-                            )}
-
-                            {activeStepId === 5 && (
-                                <Step5Declaration
-                                    declarantType={declarantType}
-                                    setDeclarantType={setDeclarantType}
-                                    childName={childName}
-                                    setChildName={setChildName}
-                                    isDeclared={isDeclared}
-                                    setIsDeclared={setIsDeclared}
-                                    onSaveAndExit={() => setViewMode('overview')}
-                                    onSaveAndNext={() => handleSaveAndNext(5)}
-                                />
-                            )}
-
-                        </div>
                     </div>
                 </div>
             )}

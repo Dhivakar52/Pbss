@@ -18,6 +18,13 @@ export function FieldLabel({ children, required }: { children: React.ReactNode; 
   );
 }
 
+const spanClasses: Record<number, string> = {
+  1: "col-span-1",
+  2: "col-span-1 sm:col-span-2",
+  3: "col-span-1 sm:col-span-2 md:col-span-3",
+  4: "col-span-1 sm:col-span-2 md:col-span-4",
+};
+
 export function Field({
   label,
   required,
@@ -25,6 +32,7 @@ export function Field({
   span = 1,
   error,
   errorText,
+  className,
 }: {
   label: string;
   required?: boolean;
@@ -32,9 +40,11 @@ export function Field({
   span?: number;
   error?: boolean;
   errorText?: string;
+  className?: string;
 }) {
+  const spanClass = spanClasses[span] || "col-span-1";
   return (
-    <div style={{ gridColumn: `span ${span} / span ${span}` }}>
+    <div className={cn(spanClass, className)}>
       <FieldLabel required={required}>{label}</FieldLabel>
       {children}
       {(error || errorText) && (

@@ -105,16 +105,16 @@ export const Step2ParentDetails: React.FC<Step2ParentDetailsProps> = ({
   return (
     <div className="space-y-6">
       {/* 1. Father's Details Card */}
-      <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-2xs space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-          <div className="flex items-center gap-2 text-sm font-bold text-[#0F294A]">
-            <Users className="h-4.5 w-4.5 text-[#1677FF]" />
+      <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-4">
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+          <div className="flex items-center gap-2 text-sm font-bold text-[#0F294A] dark:text-white">
+            <Users className="h-4.5 w-4.5 text-[#1677FF] dark:text-blue-400" />
             <span>Father's Details</span>
           </div>
         </div>
 
         {/* 4-Column Grid Layout */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <Field label="Father's Name Title" required error={fTitleErr}>
             <SelectField
               placeholder="-- Select --"
@@ -320,16 +320,16 @@ export const Step2ParentDetails: React.FC<Step2ParentDetailsProps> = ({
       </div>
 
       {/* 2. Mother's Details Card */}
-      <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-2xs space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-          <div className="flex items-center gap-2 text-sm font-bold text-[#0F294A]">
-            <UserCheck className="h-4.5 w-4.5 text-purple-600" />
+      <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-4">
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+          <div className="flex items-center gap-2 text-sm font-bold text-[#0F294A] dark:text-white">
+            <UserCheck className="h-4.5 w-4.5 text-purple-600 dark:text-purple-400" />
             <span>Mother's Details</span>
           </div>
         </div>
 
         {/* 4-Column Grid Layout */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <Field label="Mother's Name Title" required error={mTitleErr}>
             <SelectField
               placeholder="-- Select --"
@@ -563,26 +563,26 @@ export const Step2ParentDetails: React.FC<Step2ParentDetailsProps> = ({
         </div>
       </div>
 
-      {/* Bottom Actions */}
-      <div className="flex items-center justify-end gap-3 pt-3">
+      {/* Bottom Actions: Responsive for Mobile & Desktop */}
+      <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-3">
         <button
           type="button"
           onClick={onClear}
-          className="h-9 px-4 rounded-xl text-xs font-semibold border border-slate-300 text-slate-700 hover:bg-slate-100 transition-all cursor-pointer flex items-center gap-1.5 bg-white"
+          className="h-10 px-4 rounded-xl text-xs font-semibold border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer flex items-center justify-center gap-1.5 bg-white dark:bg-slate-800"
         >
           <RotateCcw className="h-3.5 w-3.5" /> Clear
         </button>
         <button
           type="button"
           onClick={onSaveAndExit}
-          className="h-9 px-4 rounded-xl text-xs font-semibold border border-blue-500 text-[#1677FF] hover:bg-blue-50 transition-all cursor-pointer flex items-center gap-1.5 bg-white"
+          className="h-10 px-5 rounded-xl text-xs font-semibold border border-blue-500 text-[#1677FF] dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 transition-all cursor-pointer flex items-center justify-center gap-1.5 bg-white dark:bg-slate-800"
         >
           <Save className="h-3.5 w-3.5" /> Save & Exit
         </button>
         <button
           type="button"
           onClick={handleNext}
-          className="h-9 px-5 rounded-xl text-xs font-semibold bg-[#1677FF] hover:bg-[#0958D9] text-white shadow-2xs transition-all cursor-pointer flex items-center gap-1.5"
+          className="h-10 px-6 rounded-xl text-xs font-semibold bg-[#1677FF] hover:bg-[#0958D9] dark:bg-blue-600 dark:hover:bg-blue-500 text-white shadow-2xs transition-all cursor-pointer flex items-center justify-center gap-1.5"
         >
           Save & Next <ArrowRight className="h-3.5 w-3.5" />
         </button>

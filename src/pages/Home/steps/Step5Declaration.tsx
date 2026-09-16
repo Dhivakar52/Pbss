@@ -33,7 +33,7 @@ export const Step5Declaration: React.FC<Step5DeclarationProps> = ({
       {/* Main Declaration Box matching Screenshot 4 */}
       <div className="p-5 rounded-xl bg-[#E6F4FF]/50 dark:bg-blue-950/30 border border-[#BAE0FF] dark:border-blue-900/60 space-y-4">
         {/* Declarant Radio Selection */}
-        <div className="flex items-center gap-6 text-xs font-bold text-slate-800 dark:text-slate-200 border-b border-blue-100 dark:border-blue-900/40 pb-3">
+        <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-xs font-bold text-slate-800 dark:text-slate-200 border-b border-blue-100 dark:border-blue-900/40 pb-3">
           <label className="flex items-center gap-1.5 cursor-pointer">
             <input
               type="radio"
@@ -119,18 +119,18 @@ export const Step5Declaration: React.FC<Step5DeclarationProps> = ({
       </div>
 
       {/* Action Buttons matching Screenshot 4 ACCEPT button */}
-      <div className="flex items-center justify-center gap-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+      <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-center gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
         <button
           type="button"
           onClick={onSaveAndExit}
-          className="h-10 px-5 rounded-xl text-xs font-semibold border border-blue-500 text-[#1677FF] dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 transition-all cursor-pointer flex items-center gap-1.5 bg-white dark:bg-slate-800"
+          className="h-10 px-5 rounded-xl text-xs font-semibold border border-blue-500 dark:border-blue-600 text-[#1677FF] dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 transition-all cursor-pointer flex items-center justify-center gap-1.5 bg-white dark:bg-slate-800"
         >
           <Save className="h-4 w-4" /> Save & Exit
         </button>
         <button
           type="button"
           onClick={onSaveAndNext}
-          className="h-10 px-8 rounded-xl text-xs font-bold bg-[#1677FF] hover:bg-[#0958D9] dark:bg-blue-600 dark:hover:bg-blue-500 text-white shadow-md transition-all cursor-pointer flex items-center gap-2"
+          className="h-10 px-8 rounded-xl text-xs font-bold bg-[#1677FF] hover:bg-[#0958D9] dark:bg-blue-600 dark:hover:bg-blue-500 text-white shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
         >
           <FileCheck className="h-4 w-4" /> ACCEPT & SUBMIT <ArrowRight className="h-4 w-4" />
         </button>

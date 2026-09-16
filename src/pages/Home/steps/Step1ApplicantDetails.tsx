@@ -122,14 +122,14 @@ export const Step1ApplicantDetails: React.FC<Step1ApplicantDetailsProps> = ({
   return (
     <div className="space-y-5">
       {/* Top Card Banner: Applying For */}
-      <div className="p-4 rounded-xl bg-[#F0F7FF] border border-[#BDE0FE] flex items-center justify-between">
+      <div className="p-4 rounded-xl bg-[#F0F7FF] dark:bg-blue-950/30 border border-[#BDE0FE] dark:border-blue-900/40 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-[#E6F4FF] text-[#1677FF] flex items-center justify-center shrink-0">
+          <div className="w-9 h-9 rounded-lg bg-[#E6F4FF] dark:bg-blue-900/40 text-[#1677FF] dark:text-blue-400 flex items-center justify-center shrink-0">
             <Building className="h-5 w-5" />
           </div>
           <div>
-            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide block">Applying For</span>
-            <span className="text-sm font-bold text-slate-900">T. Nagar - PSBB</span>
+            <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide block">Applying For</span>
+            <span className="text-sm font-bold text-slate-900 dark:text-white">T. Nagar - PSBB</span>
           </div>
         </div>
         <ChevronDown className="h-4 w-4 text-slate-400" />
@@ -139,14 +139,14 @@ export const Step1ApplicantDetails: React.FC<Step1ApplicantDetailsProps> = ({
       <div className="space-y-5">
         
         {/* 1. Child Information Card */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-2xs space-y-4">
-          <div className="flex items-center gap-2 text-xs font-bold text-[#0F294A] border-b border-slate-100 pb-3">
-            <User className="h-4 w-4 text-[#1677FF]" />
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-4">
+          <div className="flex items-center gap-2 text-xs font-bold text-[#0F294A] dark:text-white border-b border-slate-100 dark:border-slate-800 pb-3">
+            <User className="h-4 w-4 text-[#1677FF] dark:text-blue-400" />
             <span>Child Information</span>
           </div>
 
           {/* 4-Column Grid for Input Fields */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <Field label="Child Name" required error={isChildNameErr}>
               <TextField
                 placeholder="Enter child name"
@@ -227,15 +227,15 @@ export const Step1ApplicantDetails: React.FC<Step1ApplicantDetailsProps> = ({
         </div>
 
         {/* 2. Additional Information Card */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-2xs space-y-4">
-          <div className="flex items-center gap-2 text-xs font-bold text-[#0F294A] border-b border-slate-100 pb-3">
-            <School className="h-4 w-4 text-[#1677FF]" />
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-4">
+          <div className="flex items-center gap-2 text-xs font-bold text-[#0F294A] dark:text-white border-b border-slate-100 dark:border-slate-800 pb-3">
+            <School className="h-4 w-4 text-[#1677FF] dark:text-blue-400" />
             <span>Additional Information</span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <Field label="Does the child go to any school?" span={2}>
-              <div className="flex items-center gap-4 text-xs font-medium text-slate-700 mt-1">
+              <div className="flex items-center gap-4 text-xs font-medium text-slate-700 dark:text-slate-300 mt-1">
                 <label className="flex items-center gap-1.5 cursor-pointer">
                   <input
                     type="radio"
@@ -267,7 +267,7 @@ export const Step1ApplicantDetails: React.FC<Step1ApplicantDetailsProps> = ({
             </Field>
 
             <Field label="Does the child have siblings studying in this school?" span={4}>
-              <div className="flex items-center gap-4 text-xs font-medium text-slate-700 mt-1">
+              <div className="flex items-center gap-4 text-xs font-medium text-slate-700 dark:text-slate-300 mt-1">
                 <label className="flex items-center gap-1.5 cursor-pointer">
                   <input
                     type="radio"
@@ -289,23 +289,23 @@ export const Step1ApplicantDetails: React.FC<Step1ApplicantDetailsProps> = ({
               </div>
             </Field>
 
-            {/* Sibling Table across all 4 columns */}
-            <div className="md:col-span-4 overflow-x-auto border border-slate-200 rounded-xl pt-1">
-              <table className="w-full text-left text-[11px]">
+            {/* Sibling Table across all columns with horizontal scroll on mobile */}
+            <div className="col-span-1 sm:col-span-2 lg:col-span-4 overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-xl pt-1">
+              <table className="w-full min-w-[640px] text-left text-[11px]">
                 <thead>
-                  <tr className="bg-slate-50 text-slate-600 font-bold border-b border-slate-200">
+                  <tr className="bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-700">
                     <th className="p-2">Name of Sibling</th>
                     <th className="p-2">Name of the School</th>
                     <th className="p-2">Left Student?</th>
                     <th className="p-2">USN</th>
                     <th className="p-2">Class/Sec</th>
                     <th className="p-2">Year & Class of Leaving</th>
-                    <th className="p-2"></th>
+                    <th className="p-2 text-center">Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   {siblings.map((sib, index) => (
-                    <tr key={index} className="border-b border-slate-100 last:border-0">
+                    <tr key={index} className="border-b border-slate-100 dark:border-slate-800 last:border-0">
                       <td className="p-1.5">
                         <TextField
                           placeholder="Select or type"
@@ -350,9 +350,9 @@ export const Step1ApplicantDetails: React.FC<Step1ApplicantDetailsProps> = ({
                         <button
                           type="button"
                           onClick={() => removeSibling(index)}
-                          className="w-5 h-5 rounded-full text-red-500 hover:bg-red-50 flex items-center justify-center font-bold text-xs cursor-pointer"
+                          className="w-6 h-6 rounded-full text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 flex items-center justify-center font-bold text-xs cursor-pointer mx-auto"
                         >
-                          -
+                          ✕
                         </button>
                       </td>
                     </tr>
@@ -361,11 +361,11 @@ export const Step1ApplicantDetails: React.FC<Step1ApplicantDetailsProps> = ({
               </table>
             </div>
 
-            <div className="md:col-span-4">
+            <div className="col-span-1 sm:col-span-2 lg:col-span-4">
               <button
                 type="button"
                 onClick={addSibling}
-                className="text-xs font-bold text-[#1677FF] hover:underline flex items-center gap-1 cursor-pointer pt-1"
+                className="text-xs font-bold text-[#1677FF] dark:text-blue-400 hover:underline flex items-center gap-1 cursor-pointer pt-1"
               >
                 <PlusCircle className="h-3.5 w-3.5" /> Add Sibling
               </button>
@@ -374,15 +374,15 @@ export const Step1ApplicantDetails: React.FC<Step1ApplicantDetailsProps> = ({
         </div>
 
         {/* 3. Health Information Card */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-2xs space-y-4">
-          <div className="flex items-center gap-2 text-xs font-bold text-[#0F294A] border-b border-slate-100 pb-3">
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-4">
+          <div className="flex items-center gap-2 text-xs font-bold text-[#0F294A] dark:text-white border-b border-slate-100 dark:border-slate-800 pb-3">
             <Heart className="h-4 w-4 text-red-500" />
             <span>Health Information</span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <Field label="Is the Child a normal and healthy child?" span={2}>
-              <div className="flex items-center gap-4 text-xs font-medium text-slate-700 mt-1">
+              <div className="flex items-center gap-4 text-xs font-medium text-slate-700 dark:text-slate-300 mt-1">
                 <label className="flex items-center gap-1.5 cursor-pointer">
                   <input
                     type="radio"
@@ -416,19 +416,19 @@ export const Step1ApplicantDetails: React.FC<Step1ApplicantDetailsProps> = ({
 
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex items-center justify-end gap-3 pt-3">
+      {/* Action Buttons: Responsive for Mobile & Desktop */}
+      <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-3">
         <button
           type="button"
           onClick={onSaveAndExit}
-          className="h-9 px-4 rounded-xl text-xs font-semibold border border-blue-500 text-[#1677FF] hover:bg-blue-50 transition-all cursor-pointer flex items-center gap-1.5 bg-white"
+          className="h-10 px-5 rounded-xl text-xs font-semibold border border-blue-500 text-[#1677FF] dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 transition-all cursor-pointer flex items-center justify-center gap-1.5 bg-white dark:bg-slate-800"
         >
           <Save className="h-3.5 w-3.5" /> Save & Exit
         </button>
         <button
           type="button"
           onClick={handleNext}
-          className="h-9 px-5 rounded-xl text-xs font-semibold bg-[#1677FF] hover:bg-[#0958D9] text-white shadow-2xs transition-all cursor-pointer flex items-center gap-1.5"
+          className="h-10 px-6 rounded-xl text-xs font-semibold bg-[#1677FF] hover:bg-[#0958D9] dark:bg-blue-600 dark:hover:bg-blue-500 text-white shadow-2xs transition-all cursor-pointer flex items-center justify-center gap-1.5"
         >
           Save & Next <ArrowRight className="h-3.5 w-3.5" />
         </button>

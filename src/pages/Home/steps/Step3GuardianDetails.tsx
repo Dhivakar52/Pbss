@@ -57,10 +57,10 @@ export const Step3GuardianDetails: React.FC<Step3GuardianDetailsProps> = ({
   }
 
   return (
-    <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-2xs space-y-5">
-      <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-        <div className="flex items-center gap-2 text-sm font-bold text-[#0F294A]">
-          <User className="h-4.5 w-4.5 text-[#1677FF]" />
+    <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-5">
+      <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+        <div className="flex items-center gap-2 text-sm font-bold text-[#0F294A] dark:text-white">
+          <User className="h-4.5 w-4.5 text-[#1677FF] dark:text-blue-400" />
           <span>Guardian Details (If Applicable)</span>
         </div>
       </div>
@@ -68,7 +68,7 @@ export const Step3GuardianDetails: React.FC<Step3GuardianDetailsProps> = ({
       <div className="space-y-4">
         {/* Toggle Guardian Applicable */}
         <Field label="Guardian Details (If Applicable)">
-          <div className="flex items-center gap-4 text-xs font-medium text-slate-700 mt-1">
+          <div className="flex items-center gap-4 text-xs font-medium text-slate-700 dark:text-slate-300 mt-1">
             <label className="flex items-center gap-1.5 cursor-pointer">
               <input
                 type="radio"
@@ -90,8 +90,8 @@ export const Step3GuardianDetails: React.FC<Step3GuardianDetailsProps> = ({
           </div>
         </Field>
 
-        {/* Form Fields arranged in 4-Column Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        {/* Form Fields arranged in responsive Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <Field label="Reason" required={guardian.isApplicable} span={4} error={isReasonErr}>
             <textarea
               rows={2}
@@ -99,8 +99,8 @@ export const Step3GuardianDetails: React.FC<Step3GuardianDetailsProps> = ({
               disabled={!guardian.isApplicable}
               value={guardian.reason}
               onChange={(e) => update('reason', e.target.value)}
-              className={`w-full p-2.5 rounded-lg border text-xs focus:outline-none disabled:bg-slate-50 disabled:text-slate-400 ${
-                isReasonErr ? 'border-rose-500 focus:border-rose-500' : 'border-slate-200 focus:border-blue-500'
+              className={`w-full p-2.5 rounded-lg border text-xs focus:outline-none disabled:bg-slate-50 disabled:dark:bg-slate-800/50 disabled:text-slate-400 disabled:dark:text-slate-600 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-200 ${
+                isReasonErr ? 'border-rose-500 focus:border-rose-500' : 'border-slate-200 dark:border-slate-800 focus:border-blue-500'
               }`}
             />
           </Field>
@@ -147,7 +147,7 @@ export const Step3GuardianDetails: React.FC<Step3GuardianDetailsProps> = ({
           </Field>
 
           <Field label="Is Guardian Employed?">
-            <div className="flex items-center gap-4 text-xs font-medium text-slate-700 mt-1">
+            <div className="flex items-center gap-4 text-xs font-medium text-slate-700 dark:text-slate-300 mt-1">
               <label className="flex items-center gap-1.5 cursor-pointer">
                 <input
                   type="radio"
@@ -237,33 +237,34 @@ export const Step3GuardianDetails: React.FC<Step3GuardianDetailsProps> = ({
               disabled={!guardian.isApplicable}
               value={guardian.officeAddress}
               onChange={(e) => update('officeAddress', e.target.value)}
-              className={`w-full p-2.5 rounded-lg border text-xs focus:outline-none disabled:bg-slate-50 disabled:text-slate-400 ${
-                isAddrErr ? 'border-rose-500 focus:border-rose-500' : 'border-slate-200 focus:border-blue-500'
+              className={`w-full p-2.5 rounded-lg border text-xs focus:outline-none disabled:bg-slate-50 disabled:dark:bg-slate-800/50 disabled:text-slate-400 disabled:dark:text-slate-600 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-200 ${
+                isAddrErr ? 'border-rose-500 focus:border-rose-500' : 'border-slate-200 dark:border-slate-800 focus:border-blue-500'
               }`}
             />
           </Field>
         </div>
       </div>
 
-      <div className="flex items-center justify-end gap-3 pt-3">
+      {/* Responsive action buttons */}
+      <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
         <button
           type="button"
           onClick={onClear}
-          className="h-9 px-4 rounded-xl text-xs font-semibold border border-slate-300 text-slate-700 hover:bg-slate-100 transition-all cursor-pointer flex items-center gap-1.5 bg-white"
+          className="h-10 sm:h-9 px-4 rounded-xl text-xs font-semibold border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer flex items-center justify-center gap-1.5 bg-white dark:bg-slate-900"
         >
           <RotateCcw className="h-3.5 w-3.5" /> Clear
         </button>
         <button
           type="button"
           onClick={onSaveAndExit}
-          className="h-9 px-4 rounded-xl text-xs font-semibold border border-blue-500 text-[#1677FF] hover:bg-blue-50 transition-all cursor-pointer flex items-center gap-1.5 bg-white"
+          className="h-10 sm:h-9 px-4 rounded-xl text-xs font-semibold border border-blue-500 dark:border-blue-600 text-[#1677FF] dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 transition-all cursor-pointer flex items-center justify-center gap-1.5 bg-white dark:bg-slate-900"
         >
           <Save className="h-3.5 w-3.5" /> Save & Exit
         </button>
         <button
           type="button"
           onClick={handleNext}
-          className="h-9 px-5 rounded-xl text-xs font-semibold bg-[#1677FF] hover:bg-[#0958D9] text-white shadow-2xs transition-all cursor-pointer flex items-center gap-1.5"
+          className="h-10 sm:h-9 px-5 rounded-xl text-xs font-semibold bg-[#1677FF] hover:bg-[#0958D9] dark:bg-blue-600 dark:hover:bg-blue-500 text-white shadow-2xs transition-all cursor-pointer flex items-center justify-center gap-1.5"
         >
           Save & Next <ArrowRight className="h-3.5 w-3.5" />
         </button>
