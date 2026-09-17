@@ -33,13 +33,13 @@ const Login = () => {
     const cleanUser = userId.trim().toLowerCase()
 
     if (cleanUser === 'admin' && password === '123') {
-      toast.success('Welcome Administrator! Redirecting to Admin Panel...')
+      toast.success('Welcome Administrator! Redirecting to Dashboard...')
       login({ userId: 'admin', name: 'Administrator', role: 'admin', roles: ['admin'] })
-      navigate('/admin/students')
+      navigate('/dashboard')
     } else if (cleanUser === 'user' && password === '123') {
       toast.success('Welcome Parent/User! Redirecting...')
       login({ userId: 'user', name: 'Regular User', role: 'user', roles: ['user'] })
-      navigate('/home')
+      navigate('/admission')
     } else {
       setLoginErrors({
         userId: 'Invalid User ID or Password',

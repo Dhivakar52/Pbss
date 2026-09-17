@@ -67,11 +67,12 @@ export const AdminStudents: React.FC = () => {
     toast.info('Search filters reset')
   }
 
-  // 1. Edit Action Handler (Navigates to /home/application-details with prefilled data)
+  // 1. Edit Action Handler (Navigates to /admission/application-details with prefilled data)
   const handleEdit = (student: StudentRecord) => {
     localStorage.setItem('editingStudent', JSON.stringify(student))
+    localStorage.setItem('fromAdmin', 'true')
     toast.success(`Opening Application Details form to edit ${student.studentName} (${student.registrationNumber})`)
-    navigate('/home/application-details')
+    navigate('/admission/application-details')
   }
 
   // 2. View Action Handler
@@ -91,7 +92,7 @@ export const AdminStudents: React.FC = () => {
   if (viewingStudent) {
     const s = viewingStudent
     return (
-      <div className="p-4 sm:p-6 space-y-6">
+      <div className="space-y-6">
         {/* Top Header Controls Bar */}
         <div className="flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs">
           <button
@@ -273,7 +274,7 @@ export const AdminStudents: React.FC = () => {
 
   // ================= 2. MAIN STUDENT LIST & TABLE VIEW =================
   return (
-    <div className="p-4 sm:p-6 space-y-6">
+    <div className="space-y-6">
       {/* DATA TABLE WITH INTEGRATED CUSTOM FILTER PANEL VIA POPOVER FILTER ICON */}
       <AdminDataTable
         title="Student Applications Master List"
@@ -281,6 +282,10 @@ export const AdminStudents: React.FC = () => {
         data={students}
         onView={handleView}
         onEdit={handleEdit}
+        onAddNew={() => {
+          localStorage.setItem('fromAdmin', 'true')
+          navigate('/admission/application-details')
+        }}
         onDelete={(student) => setDeletingStudent(student)}
         showCheckmarkCols={true}
         onToggleFilterPanel={() => setIsFilterPanelOpen(true)}

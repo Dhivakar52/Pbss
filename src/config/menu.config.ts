@@ -4,6 +4,7 @@ import {
   Users,
   FileText,
   BarChart3,
+  LayoutDashboard,
   type LucideIcon,
 } from "lucide-react"
 import { lazy } from "react"
@@ -23,40 +24,40 @@ export interface MenuItem {
 }
 
 export const getMenuConfig = (role?: string): MenuItem[] => {
-  const baseMenu: MenuItem[] = [
+  if (role === 'admin') {
+    return [
+      {
+        title: "Dashboard",
+        url: "/dashboard",
+        icon: LayoutDashboard,
+      },
+      {
+        title: "Admin",
+        url: "/admin/students",
+        icon: ShieldCheck,
+        items: [
+          {
+            title: "Student",
+            url: "/admin/students",
+            icon: Users,
+          },
+          {
+            title: "Report",
+            url: "/admin/reports",
+            icon: FileText,
+          },
+        ],
+      },
+    ]
+  }
+
+  return [
     {
-      title: "Home",
-      url: "/home",
+      title: "Admission",
+      url: "/admission",
       icon: Home
     },
   ]
-
-  if (role === 'admin') {
-    baseMenu.push({
-      title: "Admin",
-      url: "/admin/students",
-      icon: ShieldCheck,
-      items: [
-        {
-          title: "Student",
-          url: "/admin/students",
-          icon: Users,
-        },
-        {
-          title: "Report",
-          url: "/admin/reports",
-          icon: FileText,
-        },
-        {
-          title: "Charts",
-          url: "/admin/charts",
-          icon: BarChart3,
-        },
-      ],
-    })
-  }
-
-  return baseMenu
 }
 
 export const menuConfig: MenuItem[] = getMenuConfig()
@@ -82,15 +83,22 @@ export const getRoutes = () => {
 
     // ============ PROTECTED ROUTES ============
     {
-      path: "/home",
-      name: "Home",
+      path: "/dashboard",
+      name: "Dashboard",
+      component: lazy(() => import("@/pages/Admin/AdminCharts").then(m => ({ default: m.AdminCharts }))),
+      exact: true,
+      protected: true,
+    },
+    {
+      path: "/admission",
+      name: "Admission",
       component: lazy(() => import("@/pages/Home/HomeModule")),
       exact: true,
       protected: true,
     },
     {
-      path: "/home/:stepSlug",
-      name: "HomeStep",
+      path: "/admission/:stepSlug",
+      name: "AdmissionStep",
       component: lazy(() => import("@/pages/Home/HomeModule")),
       exact: true,
       protected: true,
@@ -108,13 +116,6 @@ export const getRoutes = () => {
       path: "/admin/reports",
       name: "AdminReports",
       component: lazy(() => import("@/pages/Admin/AdminReports").then(m => ({ default: m.AdminReports }))),
-      exact: true,
-      protected: true,
-    },
-    {
-      path: "/admin/charts",
-      name: "AdminCharts",
-      component: lazy(() => import("@/pages/Admin/AdminCharts").then(m => ({ default: m.AdminCharts }))),
       exact: true,
       protected: true,
     },

@@ -82,6 +82,8 @@ const formatLabel = (str: string): string => {
     'students': 'Student Master',
     'reports': 'Reports & Analytics',
     'charts': 'Analytics Charts',
+    'admission': 'Admission',
+    'dashboard': 'Dashboard',
   }
 
   if (wordMap[lowerStr]) {
@@ -123,7 +125,8 @@ export function Header({
   // Checks if a url matches the current route or sub-route
   const isUrlActive = (url: string) => {
     if (location.pathname === url) return true;
-    if (url === "/home" && (location.pathname === "/home" || location.pathname.startsWith("/home/"))) return true;
+    if (url === "/dashboard" && location.pathname === "/dashboard") return true;
+    if (url === "/admission" && (location.pathname === "/admission" || location.pathname.startsWith("/admission/"))) return true;
     if (url.startsWith("/admin") && location.pathname.startsWith(url)) return true;
     return false;
   }
@@ -193,7 +196,8 @@ export function Header({
   }
 
   const profileMenuItems = [
-    { label: "Home", icon: Home, url: "/home" },
+    { label: "Dashboard", icon: Home, url: "/dashboard" },
+    { label: "Admission", icon: Home, url: "/admission" },
     { label: "Profile", icon: UserPlus, url: "/profile" },
   ]
 
@@ -356,7 +360,7 @@ export function Header({
           </div>
 
           {/* School Logo & Title */}
-          <NavLink to="/home" className="flex items-center gap-3 shrink-0 group">
+          <NavLink to={user?.role === 'admin' ? "/dashboard" : "/admission"} className="flex items-center gap-3 shrink-0 group">
             <img
               src={Logo}
               className="h-10 w-auto object-contain transition-transform group-hover:scale-105"
@@ -579,9 +583,9 @@ export function Header({
         </nav>
       </div>
 
-      {/* Row 3: Dedicated Breadcrumb Bar (Shown only when NOT on main Home page /home) */}
+      {/* Row 3: Dedicated Breadcrumb Bar (Shown only when NOT on main Dashboard / Admission page) */}
       {
-        location.pathname !== "/home" && items.length > 1 && (
+        location.pathname !== "/dashboard" && location.pathname !== "/admission" && items.length > 1 && (
           <div className="flex h-9 items-center px-4 sm:px-6 bg-slate-100/70 dark:bg-slate-950 border-b border-slate-200/80 dark:border-slate-800 text-xs overflow-x-auto max-w-full shadow-2xs scrollbar-none">
             <Breadcrumb className="whitespace-nowrap">
               <BreadcrumbList>

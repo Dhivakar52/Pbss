@@ -247,7 +247,7 @@ export const AdminCharts: React.FC = () => {
   const pendingApps = 12
 
   return (
-    <div className="p-4 sm:p-6 space-y-6">
+    <div className="space-y-6">
       {/* Page Title */}
       <div className="flex items-center gap-3 pb-2 border-b border-slate-200 dark:border-slate-800">
         <div className="p-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400">

@@ -43,6 +43,11 @@ export default function HomeModule() {
     const [activeStepId, setActiveStepId] = useState<number>(1)
     const [completedStepIds, setCompletedStepIds] = useState<number[]>([])
 
+    // Check if coming from Admin section
+    const [fromAdmin, setFromAdmin] = useState<boolean>(() => {
+        return localStorage.getItem("fromAdmin") === "true" || localStorage.getItem("navigationSource") === "admin-students"
+    })
+
     useEffect(() => {
         if (stepSlug && stepSlugMap[stepSlug]) {
             setViewMode('stepForm')
@@ -55,7 +60,15 @@ export default function HomeModule() {
     // Pre-fill state when editing a student record from Admin table
     useEffect(() => {
         try {
+            const storedAdmin = localStorage.getItem("fromAdmin")
+            const storedSource = localStorage.getItem("navigationSource")
             const stored = localStorage.getItem("editingStudent")
+
+            if (storedAdmin === "true" || storedSource === "admin-students" || stored) {
+                setFromAdmin(true)
+                localStorage.setItem("fromAdmin", "true")
+            }
+
             if (stored) {
                 const s = JSON.parse(stored)
                 if (s && s.studentName) {
@@ -215,12 +228,22 @@ export default function HomeModule() {
     const completedCount = completedStepIds.length
     const isRegistrationComplete = completedCount === 5
 
+    const handleBackNavigation = () => {
+        if (fromAdmin) {
+            localStorage.removeItem("fromAdmin")
+            localStorage.removeItem("navigationSource")
+            navigate('/admin/students')
+        } else {
+            navigate('/admission')
+        }
+    }
+
     const handleStepClick = (stepId: number) => {
         setActiveStepId(stepId)
         setViewMode('stepForm')
         const slug = stepIdToSlug[stepId]
         if (slug) {
-            navigate(`/home/${slug}`)
+            navigate(`/admission/${slug}`)
         }
     }
 
@@ -231,9 +254,9 @@ export default function HomeModule() {
         toast.success(`${rawSteps[currentStepId - 1].title} saved successfully!`)
         if (currentStepId < 5) {
             const nextSlug = stepIdToSlug[currentStepId + 1]
-            navigate(`/home/${nextSlug}`)
+            navigate(`/admission/${nextSlug}`)
         } else {
-            navigate('/home')
+            navigate('/admission')
             setIsSuccessModalOpen(true)
             toast.success('All registration steps completed!')
         }
@@ -356,7 +379,8 @@ export default function HomeModule() {
                                 steps={steps}
                                 activeStepId={activeStepId}
                                 completedStepIds={completedStepIds}
-                                onBackToDashboard={() => navigate('/home')}
+                                onBackToDashboard={handleBackNavigation}
+                                backLabel={fromAdmin ? "Back to Student Master" : "Back to Dashboard"}
                                 onStepSelect={handleStepClick}
                             />
                         </div>

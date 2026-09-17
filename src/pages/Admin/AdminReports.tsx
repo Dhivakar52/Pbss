@@ -98,8 +98,9 @@ export const AdminReports: React.FC = () => {
   // Edit Action Handler
   const handleEdit = (student: StudentRecord) => {
     localStorage.setItem('editingStudent', JSON.stringify(student))
+    localStorage.setItem('fromAdmin', 'true')
     toast.success(`Opening Application Details form to edit ${student.studentName}`)
-    navigate('/home/application-details')
+    navigate('/admission/application-details')
   }
 
   // Delete Action Handler
@@ -112,7 +113,7 @@ export const AdminReports: React.FC = () => {
 
   // ================= MAIN REPORT LIST & CUSTOM PANEL SIDE DRAWER =================
   return (
-    <div className="p-4 sm:p-6 space-y-6">
+    <div className="space-y-6">
       <AdminDataTable
         title="Report Application Master List"
         subtitle="Detailed record listing."
@@ -313,11 +314,10 @@ export const AdminReports: React.FC = () => {
                 <span className="text-xs text-blue-200 block font-semibold">Registration Number</span>
                 <span className="text-lg font-extrabold tracking-wide">{viewingStudent.registrationNumber}</span>
               </div>
-              <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
-                viewingStudent.applicationStatus === 'Declared' ? 'bg-emerald-500/20 text-emerald-200 border border-emerald-400/30' :
-                viewingStudent.applicationStatus === 'Approved' ? 'bg-blue-500/20 text-blue-200 border border-blue-400/30' :
-                'bg-amber-500/20 text-amber-200 border border-amber-400/30'
-              }`}>
+              <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${viewingStudent.applicationStatus === 'Declared' ? 'bg-emerald-500/20 text-emerald-200 border border-emerald-400/30' :
+                  viewingStudent.applicationStatus === 'Approved' ? 'bg-blue-500/20 text-blue-200 border border-blue-400/30' :
+                    'bg-amber-500/20 text-amber-200 border border-amber-400/30'
+                }`}>
                 {viewingStudent.applicationStatus}
               </span>
             </div>
