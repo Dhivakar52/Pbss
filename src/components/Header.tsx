@@ -27,7 +27,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import {
-  Home,
   UserPlus,
   LogOut,
   ChevronDown,
@@ -196,8 +195,6 @@ export function Header({
   }
 
   const profileMenuItems = [
-    { label: "Dashboard", icon: Home, url: "/dashboard" },
-    { label: "Admission", icon: Home, url: "/admission" },
     { label: "Profile", icon: UserPlus, url: "/profile" },
   ]
 

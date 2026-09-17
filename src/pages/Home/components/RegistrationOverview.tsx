@@ -6,7 +6,8 @@ import {
   CheckCircle2,
   RotateCcw,
   Sparkles,
-  Eye
+  Eye,
+  Lock
 } from 'lucide-react'
 import type { Step } from '../types'
 
@@ -15,6 +16,8 @@ interface RegistrationOverviewProps {
   completedCount: number
   isRegistrationComplete: boolean
   activeStepId: number
+  completedStepIds?: number[]
+  isFromAdmin?: boolean
   onStepClick: (stepId: number) => void
   onCompleteAll: () => void
   onReset: () => void
@@ -28,6 +31,8 @@ export const RegistrationOverview: React.FC<RegistrationOverviewProps> = ({
   completedCount,
   isRegistrationComplete,
   activeStepId,
+  completedStepIds = [],
+  isFromAdmin = false,
   onStepClick,
   onCompleteAll,
   onReset,
@@ -101,7 +106,7 @@ export const RegistrationOverview: React.FC<RegistrationOverviewProps> = ({
 
       {/* Main 2-Column Overview Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-        
+
         {/* LEFT PANEL: Registration Progress */}
         <div className="lg:col-span-5 bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-4">
           <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
@@ -115,36 +120,47 @@ export const RegistrationOverview: React.FC<RegistrationOverviewProps> = ({
             {steps.map((step) => {
               const isActive = activeStepId === step.id
               const isDone = step.status === 'COMPLETED'
+              const isPrevDone = step.id === 1 || completedStepIds.includes(step.id - 1)
+              const isLocked = !isFromAdmin && !isRegistrationComplete && !isPrevDone
 
               return (
                 <div
                   key={step.id}
                   onClick={() => onStepClick(step.id)}
-                  className={`group relative flex items-center justify-between p-3 rounded-xl border transition-all cursor-pointer ${
-                    isActive
-                      ? 'bg-[#F0F7FF] dark:bg-blue-950/40 border-[#BDE0FE] dark:border-blue-800 shadow-2xs'
-                      : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 hover:bg-slate-50/80 dark:hover:bg-slate-800/70 hover:border-slate-200 dark:hover:border-slate-700'
-                  }`}
+                  className={`group relative flex items-center justify-between p-3 rounded-xl border transition-all ${isLocked
+                      ? 'bg-slate-50/60 dark:bg-slate-900/40 border-slate-200/60 dark:border-slate-800/60 opacity-60 cursor-not-allowed'
+                      : isActive
+                        ? 'bg-[#F0F7FF] dark:bg-blue-950/40 border-[#BDE0FE] dark:border-blue-800 shadow-2xs cursor-pointer'
+                        : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 hover:bg-slate-50/80 dark:hover:bg-slate-800/70 hover:border-slate-200 dark:hover:border-slate-700 cursor-pointer'
+                    }`}
                 >
                   <div className="flex items-center gap-3 min-w-0 pr-2">
                     <div
-                      className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs shrink-0 transition-colors ${
-                        isDone
+                      className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs shrink-0 transition-colors ${isDone
                           ? 'bg-emerald-500 text-white'
-                          : isActive
-                          ? 'bg-[#1677FF] text-white'
-                          : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
-                      }`}
+                          : isLocked
+                            ? 'bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500 border border-slate-300 dark:border-slate-700'
+                            : isActive
+                              ? 'bg-[#1677FF] text-white'
+                              : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+                        }`}
                     >
-                      {isDone ? <CheckCircle2 className="h-4 w-4" /> : step.id}
+                      {isDone ? (
+                        <CheckCircle2 className="h-4 w-4" />
+                      ) : isLocked ? (
+                        <Lock className="h-3.5 w-3.5 text-slate-400" />
+                      ) : (
+                        step.id
+                      )}
                     </div>
 
                     <span
-                      className={`text-xs font-semibold truncate ${
-                        isActive
-                          ? 'text-[#1677FF] dark:text-blue-400'
-                          : 'text-slate-700 dark:text-slate-200'
-                      }`}
+                      className={`text-xs font-semibold truncate ${isLocked
+                          ? 'text-slate-400 dark:text-slate-500'
+                          : isActive
+                            ? 'text-[#1677FF] dark:text-blue-400'
+                            : 'text-slate-700 dark:text-slate-200'
+                        }`}
                     >
                       {step.title}
                     </span>
@@ -153,19 +169,19 @@ export const RegistrationOverview: React.FC<RegistrationOverviewProps> = ({
                   </div>
 
                   <div className="flex items-center gap-1.5 shrink-0">
-                    {step.status === 'PENDING' && (
+                    {isLocked ? (
+                      <span className="px-2.5 py-0.5 text-[10px] font-bold tracking-wider rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 uppercase border border-slate-200 dark:border-slate-700 flex items-center gap-1">
+                        <Lock className="h-3 w-3" /> LOCKED
+                      </span>
+                    ) : step.status === 'PENDING' ? (
                       <span className="px-2.5 py-0.5 text-[10px] font-bold tracking-wider rounded-full bg-[#FFF0F0] dark:bg-red-950/60 text-[#FF4D4F] dark:text-red-400 uppercase border border-[#FFD6D6] dark:border-red-900">
                         PENDING
                       </span>
-                    )}
-
-                    {step.status === 'OPTIONAL' && (
+                    ) : step.status === 'OPTIONAL' ? (
                       <span className="px-2.5 py-0.5 text-[10px] font-bold tracking-wider rounded-full bg-[#E6F4FF] dark:bg-blue-950/60 text-[#1677FF] dark:text-blue-400 uppercase border border-[#BAE0FF] dark:border-blue-900">
                         OPTIONAL
                       </span>
-                    )}
-
-                    {step.status === 'COMPLETED' && (
+                    ) : (
                       <span className="px-2.5 py-0.5 text-[10px] font-bold tracking-wider rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 uppercase border border-emerald-200 dark:border-emerald-800">
                         DONE
                       </span>
@@ -216,11 +232,10 @@ export const RegistrationOverview: React.FC<RegistrationOverviewProps> = ({
                   type="button"
                   onClick={onPrintTrackSheet}
                   disabled={!isRegistrationComplete}
-                  className={`h-9 px-4 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${
-                    isRegistrationComplete
+                  className={`h-9 px-4 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${isRegistrationComplete
                       ? 'bg-[#1677FF] dark:bg-blue-600 text-white hover:bg-[#0958D9] dark:hover:bg-blue-500 shadow-2xs cursor-pointer'
                       : 'bg-[#EAECEF] dark:bg-slate-800 text-[#8C98A6] dark:text-slate-500 border border-slate-200 dark:border-slate-700 cursor-not-allowed'
-                  }`}
+                    }`}
                 >
                   <Printer className="h-3.5 w-3.5" /> Print Track Sheet
                 </button>
