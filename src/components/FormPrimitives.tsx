@@ -25,6 +25,7 @@ export function Field({
   span = 1,
   error,
   errorText,
+  className,
 }: {
   label: string;
   required?: boolean;
@@ -32,9 +33,19 @@ export function Field({
   span?: number;
   error?: boolean;
   errorText?: string;
+  className?: string;
 }) {
+  const getColSpanClass = (spanVal: number) => {
+    switch (spanVal) {
+      case 2: return "col-span-1 sm:col-span-2 md:col-span-2 lg:col-span-2";
+      case 3: return "col-span-1 sm:col-span-2 md:col-span-2 lg:col-span-3";
+      case 4: return "col-span-1 sm:col-span-2 md:col-span-2 lg:col-span-4";
+      default: return "col-span-1";
+    }
+  };
+
   return (
-    <div style={{ gridColumn: `span ${span} / span ${span}` }}>
+    <div className={cn("w-full min-w-0", getColSpanClass(span), className)}>
       <FieldLabel required={required}>{label}</FieldLabel>
       {children}
       {(error || errorText) && (

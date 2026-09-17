@@ -114,7 +114,7 @@ export const Step2ParentDetails: React.FC<Step2ParentDetailsProps> = ({
         </div>
 
         {/* 4-Column Grid Layout */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <Field label="Father's Name Title" required error={fTitleErr}>
             <SelectField
               placeholder="-- Select --"
@@ -329,7 +329,7 @@ export const Step2ParentDetails: React.FC<Step2ParentDetailsProps> = ({
         </div>
 
         {/* 4-Column Grid Layout */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <Field label="Mother's Name Title" required error={mTitleErr}>
             <SelectField
               placeholder="-- Select --"

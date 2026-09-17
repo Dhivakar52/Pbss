@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
 import { toast } from '@/components/ui/toast'
 import type {
     Step,
@@ -17,10 +18,78 @@ import { Step4CommunicationDetails } from './steps/Step4CommunicationDetails'
 import { Step5Declaration } from './steps/Step5Declaration'
 import { RegistrationSuccessModal } from './components/RegistrationSuccessModal'
 
+const stepSlugMap: Record<string, number> = {
+    'application-details': 1,
+    'applicant-details': 1,
+    'parent-details': 2,
+    'guardian-details': 3,
+    'communication-details': 4,
+    'declaration': 5,
+}
+
+const stepIdToSlug: Record<number, string> = {
+    1: 'application-details',
+    2: 'parent-details',
+    3: 'guardian-details',
+    4: 'communication-details',
+    5: 'declaration',
+}
+
 export default function HomeModule() {
+    const { stepSlug } = useParams<{ stepSlug?: string }>()
+    const navigate = useNavigate()
+
     const [viewMode, setViewMode] = useState<'overview' | 'stepForm'>('overview')
     const [activeStepId, setActiveStepId] = useState<number>(1)
     const [completedStepIds, setCompletedStepIds] = useState<number[]>([])
+
+    useEffect(() => {
+        if (stepSlug && stepSlugMap[stepSlug]) {
+            setViewMode('stepForm')
+            setActiveStepId(stepSlugMap[stepSlug])
+        } else {
+            setViewMode('overview')
+        }
+    }, [stepSlug])
+
+    // Pre-fill state when editing a student record from Admin table
+    useEffect(() => {
+        try {
+            const stored = localStorage.getItem("editingStudent")
+            if (stored) {
+                const s = JSON.parse(stored)
+                if (s && s.studentName) {
+                    setChildName(s.studentName || '')
+                    setGender(s.gender || '')
+                    setMotherTongue(s.motherTongue || '')
+                    setReligion(s.religion || '')
+                    setCaste(s.caste || '')
+                    setCommunity(s.community || '')
+                    setDob(s.date || '2022-01-15')
+                    setFather((prev) => ({
+                        ...prev,
+                        name: s.fatherName || '',
+                        mobileNo: s.mobile || '',
+                        monthlyIncome: s.incomeRange || '',
+                        isAlumnus: s.alumni || false,
+                    }))
+                    setMother((prev) => ({
+                        ...prev,
+                        name: s.motherName || '',
+                    }))
+                    setComm((prev) => ({
+                        ...prev,
+                        address: `${s.area}, ${s.city}`,
+                        distanceKm: s.distanceKm || '',
+                    }))
+                    toast.info(`Pre-filled registration data for ${s.studentName} (${s.registrationNumber})`)
+                }
+                localStorage.removeItem("editingStudent")
+            }
+        } catch (err) {
+            console.error('Error loading editing student data:', err)
+        }
+    }, [])
 
     // Success Modal State
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState<boolean>(false)
@@ -149,6 +218,10 @@ export default function HomeModule() {
     const handleStepClick = (stepId: number) => {
         setActiveStepId(stepId)
         setViewMode('stepForm')
+        const slug = stepIdToSlug[stepId]
+        if (slug) {
+            navigate(`/home/${slug}`)
+        }
     }
 
     const handleSaveAndNext = (currentStepId: number) => {
@@ -157,9 +230,10 @@ export default function HomeModule() {
         }
         toast.success(`${rawSteps[currentStepId - 1].title} saved successfully!`)
         if (currentStepId < 5) {
-            setActiveStepId(currentStepId + 1)
+            const nextSlug = stepIdToSlug[currentStepId + 1]
+            navigate(`/home/${nextSlug}`)
         } else {
-            setViewMode('overview')
+            navigate('/home')
             setIsSuccessModalOpen(true)
             toast.success('All registration steps completed!')
         }
@@ -282,8 +356,8 @@ export default function HomeModule() {
                                 steps={steps}
                                 activeStepId={activeStepId}
                                 completedStepIds={completedStepIds}
-                                onBackToDashboard={() => setViewMode('overview')}
-                                onStepSelect={(id) => setActiveStepId(id)}
+                                onBackToDashboard={() => navigate('/home')}
+                                onStepSelect={handleStepClick}
                             />
                         </div>
 

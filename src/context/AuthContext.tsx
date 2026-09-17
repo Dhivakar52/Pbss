@@ -3,6 +3,7 @@ import { createContext, useContext, useState, type ReactNode } from "react"
 interface User {
   userId: string
   name: string
+  role?: 'admin' | 'user'
   email?: string
   avatar?: string
   roles?: string[]

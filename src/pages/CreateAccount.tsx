@@ -334,7 +334,8 @@ const CreateAccount = () => {
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="px-8 h-10 bg-gradient-to-b from-[#38bdf8] to-[#0284c7] hover:from-[#0284c7] hover:to-[#0369a1] text-white font-bold text-sm rounded shadow-md border border-sky-600"
+                  className="px-8 h-10 text-white font-bold text-sm rounded shadow-md border border-sky-600 btn-app-gradient"
+                  style={{ background: "var(--app-gradient)" }}
                 >
                   {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'SUBMIT'}
                 </Button>
