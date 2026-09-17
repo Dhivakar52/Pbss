@@ -17,6 +17,8 @@ import { Step3GuardianDetails } from './steps/Step3GuardianDetails'
 import { Step4CommunicationDetails } from './steps/Step4CommunicationDetails'
 import { Step5Declaration } from './steps/Step5Declaration'
 import { RegistrationSuccessModal } from './components/RegistrationSuccessModal'
+import { PrintPreviewModal } from '@/components/PrintPreviewModal'
+import type { PrintDocumentData } from '@/types/printTypes'
 
 const stepSlugMap: Record<string, number> = {
     'application-details': 1,
@@ -248,10 +250,13 @@ export default function HomeModule() {
     }
 
     const handleSaveAndNext = (currentStepId: number) => {
-        if (!completedStepIds.includes(currentStepId)) {
-            setCompletedStepIds((prev) => [...prev, currentStepId])
-        }
+        const nextCompleted = completedStepIds.includes(currentStepId)
+            ? completedStepIds
+            : [...completedStepIds, currentStepId]
+        
+        setCompletedStepIds(nextCompleted)
         toast.success(`${rawSteps[currentStepId - 1].title} saved successfully!`)
+
         if (currentStepId < 5) {
             const nextSlug = stepIdToSlug[currentStepId + 1]
             navigate(`/admission/${nextSlug}`)
@@ -259,6 +264,10 @@ export default function HomeModule() {
             navigate('/admission')
             setIsSuccessModalOpen(true)
             toast.success('All registration steps completed!')
+            
+            // Persist full completed registration object to localStorage
+            const completedData = buildRegistrationDataObject()
+            saveCompletedToLocalStorage(completedData)
         }
     }
 
@@ -267,6 +276,10 @@ export default function HomeModule() {
         setIsDeclared(true)
         setIsSuccessModalOpen(true)
         toast.success('All 5 registration steps completed!')
+
+        // Persist full completed registration object to localStorage
+        const completedData = buildRegistrationDataObject()
+        saveCompletedToLocalStorage(completedData)
     }
 
     const handleReset = () => {
@@ -274,6 +287,12 @@ export default function HomeModule() {
         setActiveStepId(1)
         setIsDeclared(false)
         setIsSuccessModalOpen(false)
+
+        try {
+            localStorage.removeItem(STORAGE_KEY)
+        } catch (e) {
+            console.error('Failed to remove stored registration key:', e)
+        }
 
         // Clear all fields
         setChildName('')
@@ -318,18 +337,34 @@ export default function HomeModule() {
         toast.info('Registration form reset completely.')
     }
 
+    // Print Modal State
+    const [printDocType, setPrintDocType] = useState<'registrationForm' | 'trackSheet' | null>(null)
+    const [isPrintModalOpen, setIsPrintModalOpen] = useState<boolean>(false)
+    const [activePrintData, setActivePrintData] = useState<PrintDocumentData | null>(null)
+
     const handlePrintTrackSheet = () => {
-        if (!isRegistrationComplete) {
+        const storedData = getCompletedFromLocalStorage()
+        const currentData = buildRegistrationDataObject()
+        const dataToPrint = storedData || (isRegistrationComplete ? currentData : currentData)
+
+        if (!isRegistrationComplete && !storedData) {
             toast.error('Registration must be completed before printing Track Sheet.')
             return
         }
-        toast.success('Printing Track Sheet...')
-        window.print()
+
+        setActivePrintData(dataToPrint)
+        setPrintDocType('trackSheet')
+        setIsPrintModalOpen(true)
     }
 
     const handlePrintRegistrationForm = () => {
-        toast.success('Printing Registration Form...')
-        window.print()
+        const storedData = getCompletedFromLocalStorage()
+        const currentData = buildRegistrationDataObject()
+        const dataToPrint = storedData || currentData
+
+        setActivePrintData(dataToPrint)
+        setPrintDocType('registrationForm')
+        setIsPrintModalOpen(true)
     }
 
     const addSibling = () => {
@@ -511,6 +546,17 @@ export default function HomeModule() {
                 registrationNo={applicationNo}
                 submissionDate="14/09/2025"
                 timings="9:00 AM - 11:00 AM"
+            />
+
+            {/* PRINT PREVIEW & PRINT MODAL */}
+            <PrintPreviewModal
+                documentType={printDocType}
+                data={activePrintData || buildRegistrationDataObject()}
+                isOpen={isPrintModalOpen}
+                onClose={() => {
+                    setIsPrintModalOpen(false)
+                    setPrintDocType(null)
+                }}
             />
 
         </div>
