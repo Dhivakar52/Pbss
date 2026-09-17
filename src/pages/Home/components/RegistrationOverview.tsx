@@ -215,12 +215,7 @@ export const RegistrationOverview: React.FC<RegistrationOverviewProps> = ({
                 <button
                   type="button"
                   onClick={onPrintTrackSheet}
-                  disabled={!isRegistrationComplete}
-                  className={`h-9 px-4 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${
-                    isRegistrationComplete
-                      ? 'bg-[#1677FF] dark:bg-blue-600 text-white hover:bg-[#0958D9] dark:hover:bg-blue-500 shadow-2xs cursor-pointer'
-                      : 'bg-[#EAECEF] dark:bg-slate-800 text-[#8C98A6] dark:text-slate-500 border border-slate-200 dark:border-slate-700 cursor-not-allowed'
-                  }`}
+                  className="h-9 px-4 rounded-xl text-xs font-semibold bg-[#1677FF] dark:bg-blue-600 hover:bg-[#0958D9] dark:hover:bg-blue-500 text-white shadow-2xs transition-all cursor-pointer flex items-center gap-2"
                 >
                   <Printer className="h-3.5 w-3.5" /> Print Track Sheet
                 </button>
