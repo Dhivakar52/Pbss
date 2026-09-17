@@ -6,8 +6,6 @@ import {
   SlidersHorizontal,
   Plus,
   ArrowUpDown,
-  ChevronLeft,
-  ChevronRight,
   UserCheck,
   CheckCircle2,
   Clock,
@@ -15,7 +13,6 @@ import {
   Eye,
   Edit3,
   Trash2,
-  MoreVertical,
   Filter,
   FileSpreadsheet,
   Printer

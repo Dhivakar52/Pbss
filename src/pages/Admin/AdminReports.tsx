@@ -1,26 +1,17 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import CustomPanel from '@/common/CustomPanel'
-import { Field, TextField, SelectField } from '@/components/FormPrimitives'
+import { Field, SelectField } from '@/components/FormPrimitives'
 import { AdminDataTable } from '@/components/AdminDataTable'
 import { mockStudents, type StudentRecord } from '@/data/mockStudents'
 import {
-  FileText,
-  Search,
-  RotateCcw,
-  Download,
-  ArrowLeft,
-  Printer,
-  Edit3,
   User,
   Briefcase,
   MapPin,
-  GraduationCap,
   Trash2,
   AlertTriangle
 } from 'lucide-react'
 import { toast } from '@/components/ui/toast'
-import logoImg from '@/assets/images/logo.png'
 
 export const AdminReports: React.FC = () => {
   const navigate = useNavigate()
@@ -39,9 +30,7 @@ export const AdminReports: React.FC = () => {
   const [nationality, setNationality] = useState('')
   const [alumni, setAlumni] = useState('')
   const [religion, setReligion] = useState('')
-  const [caste, setCaste] = useState('')
   const [community, setCommunity] = useState('')
-  const [siblings, setSiblings] = useState('')
   const [regNoSearch, setRegNoSearch] = useState('')
 
   // Filter Panel side drawer open state
@@ -82,9 +71,7 @@ export const AdminReports: React.FC = () => {
     setNationality('')
     setAlumni('')
     setReligion('')
-    setCaste('')
     setCommunity('')
-    setSiblings('')
     setRegNoSearch('')
     setReportData(mockStudents)
     toast.info('Report filters cleared')

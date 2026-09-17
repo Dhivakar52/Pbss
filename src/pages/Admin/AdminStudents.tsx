@@ -3,29 +3,19 @@ import { useNavigate } from 'react-router-dom'
 import CustomPanel from '@/common/CustomPanel'
 import { mockStudents, type StudentRecord } from '@/data/mockStudents'
 import {
-  Search,
-  GraduationCap,
   ArrowLeft,
   Printer,
   Edit3,
   Trash2,
-  CheckCircle2,
-  Clock,
   User,
   MapPin,
-  Heart,
-  FileCheck,
   AlertTriangle,
-  Building,
-  Phone,
-  Briefcase,
-  BookOpen,
-  School
+  Briefcase
 } from 'lucide-react'
 import { toast } from '@/components/ui/toast'
 import logoImg from '@/assets/images/logo.png'
 import { AdminDataTable } from '@/components/AdminDataTable'
-import { Field, TextField, SelectField } from '@/components/FormPrimitives'
+import { Field, SelectField } from '@/components/FormPrimitives'
 
 export const AdminStudents: React.FC = () => {
   const navigate = useNavigate()
