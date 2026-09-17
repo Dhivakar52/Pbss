@@ -21,18 +21,32 @@ const Login = () => {
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     const errors: { userId?: string; password?: string } = {}
-    if (!userId) errors.userId = 'User ID is required'
+    if (!userId.trim()) errors.userId = 'User ID is required'
     if (!password) errors.password = 'Password is required'
     setLoginErrors(errors)
 
     if (Object.keys(errors).length > 0) return
 
     setIsLoading(true)
-    await new Promise(resolve => setTimeout(resolve, 800))
+    await new Promise(resolve => setTimeout(resolve, 600))
 
-    toast.success('Welcome back! Redirecting...')
-    login({ userId, name: userId || 'Parent' })
-    navigate('/home')
+    const cleanUser = userId.trim().toLowerCase()
+
+    if (cleanUser === 'admin' && password === '123') {
+      toast.success('Welcome Administrator! Redirecting to Dashboard...')
+      login({ userId: 'admin', name: 'Administrator', role: 'admin', roles: ['admin'] })
+      navigate('/dashboard')
+    } else if (cleanUser === 'user' && password === '123') {
+      toast.success('Welcome Parent/User! Redirecting...')
+      login({ userId: 'user', name: 'Regular User', role: 'user', roles: ['user'] })
+      navigate('/admission')
+    } else {
+      setLoginErrors({
+        userId: 'Invalid User ID or Password',
+        password: 'Try user / 123 or admin / 123'
+      })
+      toast.error('Invalid Credentials. Use user/123 or admin/123')
+    }
     setIsLoading(false)
   }
 
@@ -117,7 +131,7 @@ const Login = () => {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full h-11 bg-[#0088b6] hover:bg-[#0077a0] text-white text-sm font-bold rounded-lg shadow-sm transition-all mt-2 flex items-center justify-center gap-2"
+              className="w-full h-11 btn-app-gradient text-white text-sm font-bold rounded-lg shadow-sm transition-all mt-2 flex items-center justify-center gap-2 cursor-pointer"
             >
               {isLoading ? (
                 <>
@@ -144,11 +158,31 @@ const Login = () => {
             <Button
               type="button"
               onClick={() => navigate('/create')}
-              className="w-full h-11 bg-white hover:bg-sky-50 border-2 border-[#0088b6] text-[#0088b6] text-sm font-bold rounded-lg shadow-sm transition-all flex items-center justify-center gap-2"
+              className="w-full h-11 bg-white hover:bg-sky-50 border-2 border-[#0a6f9c] text-[#0a6f9c] text-sm font-bold rounded-lg shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               <UserPlus className="h-4 w-4" />
               CREATE NEW ACCOUNT
             </Button>
+            {/* Demo Credentials Quick Click Helper */}
+            {/* <div className="mt-4 p-3 rounded-lg bg-sky-50/80 border border-sky-200 text-xs text-sky-900 space-y-1.5">
+            <p className="font-bold text-center text-slate-800">Quick Test Credentials:</p>
+            <div className="flex items-center justify-center gap-2">
+              <button
+                type="button"
+                onClick={() => { setUserId('user'); setPassword('123'); setLoginErrors({}); }}
+                className="px-2.5 py-1 bg-white hover:bg-sky-100 border border-sky-300 rounded font-semibold text-sky-800 shadow-2xs transition-colors cursor-pointer"
+              >
+                User: <span className="font-mono text-blue-700">user</span> / <span className="font-mono text-blue-700">123</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => { setUserId('admin'); setPassword('123'); setLoginErrors({}); }}
+                className="px-2.5 py-1 bg-white hover:bg-sky-100 border border-sky-300 rounded font-semibold text-purple-800 shadow-2xs transition-colors cursor-pointer"
+              >
+                Admin: <span className="font-mono text-purple-700">admin</span> / <span className="font-mono text-purple-700">123</span>
+              </button>
+            </div>
+          </div> */}
           </form>
 
           {/* ================= AGE ELIGIBILITY FOOTER ================= */}

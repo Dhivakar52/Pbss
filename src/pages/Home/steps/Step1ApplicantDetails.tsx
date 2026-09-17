@@ -146,7 +146,7 @@ export const Step1ApplicantDetails: React.FC<Step1ApplicantDetailsProps> = ({
           </div>
 
           {/* 4-Column Grid for Input Fields */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <Field label="Child Name" required error={isChildNameErr}>
               <TextField
                 placeholder="Enter child name"
@@ -233,7 +233,7 @@ export const Step1ApplicantDetails: React.FC<Step1ApplicantDetailsProps> = ({
             <span>Additional Information</span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <Field label="Does the child go to any school?" span={2}>
               <div className="flex items-center gap-4 text-xs font-medium text-slate-700 mt-1">
                 <label className="flex items-center gap-1.5 cursor-pointer">
@@ -380,7 +380,7 @@ export const Step1ApplicantDetails: React.FC<Step1ApplicantDetailsProps> = ({
             <span>Health Information</span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <Field label="Is the Child a normal and healthy child?" span={2}>
               <div className="flex items-center gap-4 text-xs font-medium text-slate-700 mt-1">
                 <label className="flex items-center gap-1.5 cursor-pointer">

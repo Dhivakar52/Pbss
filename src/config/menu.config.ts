@@ -1,5 +1,10 @@
 import {
   Home,
+  ShieldCheck,
+  Users,
+  FileText,
+  BarChart3,
+  LayoutDashboard,
   type LucideIcon,
 } from "lucide-react"
 import { lazy } from "react"
@@ -18,13 +23,44 @@ export interface MenuItem {
   items?: SubMenuItem[]
 }
 
-export const menuConfig: MenuItem[] = [
-  {
-    title: "Home",
-    url: "/home",
-    icon: Home
-  },
-]
+export const getMenuConfig = (role?: string): MenuItem[] => {
+  if (role === 'admin') {
+    return [
+      {
+        title: "Dashboard",
+        url: "/dashboard",
+        icon: LayoutDashboard,
+      },
+      {
+        title: "Admin",
+        url: "/admin/students",
+        icon: ShieldCheck,
+        items: [
+          {
+            title: "Student",
+            url: "/admin/students",
+            icon: Users,
+          },
+          {
+            title: "Report",
+            url: "/admin/reports",
+            icon: FileText,
+          },
+        ],
+      },
+    ]
+  }
+
+  return [
+    {
+      title: "Admission",
+      url: "/admission",
+      icon: Home
+    },
+  ]
+}
+
+export const menuConfig: MenuItem[] = getMenuConfig()
 
 // Routes configuration (public and protected)
 export const getRoutes = () => {
@@ -47,9 +83,39 @@ export const getRoutes = () => {
 
     // ============ PROTECTED ROUTES ============
     {
-      path: "/home",
-      name: "Home",
+      path: "/dashboard",
+      name: "Dashboard",
+      component: lazy(() => import("@/pages/Admin/AdminCharts").then(m => ({ default: m.AdminCharts }))),
+      exact: true,
+      protected: true,
+    },
+    {
+      path: "/admission",
+      name: "Admission",
       component: lazy(() => import("@/pages/Home/HomeModule")),
+      exact: true,
+      protected: true,
+    },
+    {
+      path: "/admission/:stepSlug",
+      name: "AdmissionStep",
+      component: lazy(() => import("@/pages/Home/HomeModule")),
+      exact: true,
+      protected: true,
+    },
+
+    // ============ ADMIN PROTECTED ROUTES ============
+    {
+      path: "/admin/students",
+      name: "AdminStudents",
+      component: lazy(() => import("@/pages/Admin/AdminStudents").then(m => ({ default: m.AdminStudents }))),
+      exact: true,
+      protected: true,
+    },
+    {
+      path: "/admin/reports",
+      name: "AdminReports",
+      component: lazy(() => import("@/pages/Admin/AdminReports").then(m => ({ default: m.AdminReports }))),
       exact: true,
       protected: true,
     },

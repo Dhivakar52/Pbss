@@ -7,6 +7,7 @@ interface StepSidebarProps {
   activeStepId: number
   completedStepIds: number[]
   onBackToDashboard: () => void
+  backLabel?: string
   onStepSelect: (stepId: number) => void
 }
 
@@ -15,6 +16,7 @@ export const StepSidebar: React.FC<StepSidebarProps> = ({
   activeStepId,
   completedStepIds,
   onBackToDashboard,
+  backLabel,
   onStepSelect,
 }) => {
   return (
@@ -24,7 +26,7 @@ export const StepSidebar: React.FC<StepSidebarProps> = ({
         onClick={onBackToDashboard}
         className="flex items-center gap-1.5 text-xs font-semibold text-[#1677FF] dark:text-blue-400 hover:text-[#0958D9] dark:hover:text-blue-300 transition-colors cursor-pointer"
       >
-        <ArrowLeft className="h-4 w-4" /> Back to Dashboard
+        <ArrowLeft className="h-4 w-4" /> {backLabel || 'Back to Dashboard'}
       </button>
 
       <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-4">

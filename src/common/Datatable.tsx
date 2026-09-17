@@ -63,15 +63,15 @@ export function DataTable<TData, TValue>({
   return (
     <div className="relative overflow-x-auto rounded-md border">
       <Table>
-        <TableHeader className="" style={{ background: "var(--sidebar-top-bg)" }}>
+        <TableHeader className="" style={{ background: "var(--table-header-bg, #13729d)" }}>
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id} className="hover:bg-transparent">
+            <TableRow key={headerGroup.id} className="hover:bg-transparent border-b-0">
               {headerGroup.headers.map((header) => {
                 const isSortable = header.column.getCanSort()
                 const sortDirection = header.column.getIsSorted()
 
                 return (
-                  <TableHead key={header.id}>
+                  <TableHead key={header.id} className="border-r border-white/20 last:border-r-0 py-2.5 px-3.5">
                     {header.isPlaceholder ? null : (
                       <div
                         className={`flex items-center text-white gap-1 ${isSortable ? 'cursor-pointer select-none ' : ''

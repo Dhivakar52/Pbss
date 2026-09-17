@@ -1,4 +1,5 @@
 import React from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface PaginationTable {
   getState: () => { pagination: { pageIndex: number; pageSize: number } };
@@ -13,9 +14,14 @@ interface PaginationTable {
 interface PaginationProps {
   table: PaginationTable;
   totalCount: number;
+  pageSizeOptions?: number[];
 }
 
-const Pagination: React.FC<PaginationProps> = ({ table, totalCount }) => {
+const Pagination: React.FC<PaginationProps> = ({
+  table,
+  totalCount,
+  pageSizeOptions = [5, 10, 20, 50, 100],
+}) => {
   if (!table) return null;
 
   const { pageIndex, pageSize } = table.getState().pagination;
@@ -30,46 +36,37 @@ const Pagination: React.FC<PaginationProps> = ({ table, totalCount }) => {
   const getVisiblePages = () => {
     const pages: (number | string)[] = [];
 
-    if (totalPages <= 7) {
+    if (totalPages <= 5) {
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
       }
       return pages;
     }
 
-    const start = Math.max(2, currentPage - 1);
-    const end = Math.min(totalPages - 1, currentPage + 1);
-
-    pages.push(1);
-
-    if (start > 2) {
-      pages.push("...");
+    if (currentPage <= 3) {
+      pages.push(1, 2, "...", totalPages);
+    } else if (currentPage >= totalPages - 2) {
+      pages.push(1, "...", totalPages - 1, totalPages);
+    } else {
+      pages.push(1, "...", currentPage, "...", totalPages);
     }
 
-    for (let i = start; i <= end; i++) {
-      pages.push(i);
-    }
-
-    if (end < totalPages - 1) {
-      pages.push("...");
-    }
-
-    pages.push(totalPages);
-
-    return pages.filter((page, index, arr) => arr.indexOf(page) === index);
+    return pages;
   };
 
   const pages = getVisiblePages();
 
   return (
-    <div className="flex items-center justify-between mt-4 flex-wrap gap-3">
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600 dark:text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800">
       {/* LEFT: Records Count & Records Per Page Dropdown */}
-      <div className="flex items-center gap-3 text-sm text-foreground">
+      <div className="flex items-center gap-3 flex-wrap">
         <div>
-          Showing <b>{start}</b> to <b>{end}</b> of <b>{totalCount}</b> records
+          Showing <span className="font-bold text-slate-900 dark:text-white">{start}</span> to{" "}
+          <span className="font-bold text-slate-900 dark:text-white">{end}</span> of{" "}
+          <span className="font-bold text-slate-900 dark:text-white">{totalCount}</span> records
         </div>
 
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+        <div className="flex items-center gap-1.5">
           <span>Per page:</span>
           <select
             value={pageSize}
@@ -78,9 +75,9 @@ const Pagination: React.FC<PaginationProps> = ({ table, totalCount }) => {
               table.setPageSize(newSize);
               table.setPageIndex(0);
             }}
-            className="border border-border bg-background text-foreground px-2 py-1 rounded text-xs cursor-pointer hover:border-slate-400 focus:outline-none"
+            className="h-7 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 text-xs font-semibold text-slate-800 dark:text-slate-200 outline-none cursor-pointer"
           >
-            {[10, 25, 50, 100].map((size) => (
+            {pageSizeOptions.map((size) => (
               <option key={size} value={size}>
                 {size}
               </option>
@@ -90,21 +87,22 @@ const Pagination: React.FC<PaginationProps> = ({ table, totalCount }) => {
       </div>
 
       {/* RIGHT: Page Navigation Buttons */}
-      <div className="flex items-center">
+      <div className="flex items-center gap-1">
         {/* Previous */}
         <button
+          type="button"
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
-          className="px-3 py-1 mx-1 rounded border border-border bg-background text-foreground hover:theme-color hover:border-transparent disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer text-xs"
+          className="h-7 w-7 flex items-center justify-center rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-500 hover:text-slate-900 disabled:opacity-30 cursor-pointer transition-colors"
         >
-          ‹
+          <ChevronLeft className="h-3.5 w-3.5" />
         </button>
 
         {/* Page Numbers */}
         {pages.map((p, index) => {
           if (p === "...") {
             return (
-              <span key={index} className="px-2 text-muted-foreground text-xs">
+              <span key={`ellip-${index}`} className="px-1 text-slate-400 font-medium select-none">
                 ...
               </span>
             );
@@ -112,12 +110,13 @@ const Pagination: React.FC<PaginationProps> = ({ table, totalCount }) => {
 
           return (
             <button
-              key={p}
+              key={`pg-${p}`}
+              type="button"
               onClick={() => table.setPageIndex(Number(p) - 1)}
-              className={`px-3 py-1 mx-1 rounded transition-colors text-xs cursor-pointer ${
+              className={`h-7 min-w-[28px] px-2 rounded border text-xs font-semibold transition-all cursor-pointer ${
                 p === currentPage
-                  ? "theme-color font-bold"
-                  : "bg-secondary text-secondary-foreground hover:bg-accent hover:text-accent-foreground"
+                  ? "bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-900 font-bold"
+                  : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
               }`}
             >
               {p}
@@ -127,11 +126,12 @@ const Pagination: React.FC<PaginationProps> = ({ table, totalCount }) => {
 
         {/* Next */}
         <button
+          type="button"
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}
-          className="px-3 py-1 mx-1 rounded border border-border bg-background text-foreground hover:theme-color hover:border-transparent disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer text-xs"
+          className="h-7 w-7 flex items-center justify-center rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-500 hover:text-slate-900 disabled:opacity-30 cursor-pointer transition-colors"
         >
-          ›
+          <ChevronRight className="h-3.5 w-3.5" />
         </button>
       </div>
     </div>

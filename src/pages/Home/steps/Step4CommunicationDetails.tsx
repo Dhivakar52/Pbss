@@ -71,7 +71,7 @@ export const Step4CommunicationDetails: React.FC<Step4CommunicationDetailsProps>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <Field label="Address" required span={4} error={isAddrErr}>
             <textarea
               rows={3}
@@ -110,7 +110,7 @@ export const Step4CommunicationDetails: React.FC<Step4CommunicationDetailsProps>
           <span>Other Details</span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <Field label="Important (familiar) landmark (Near Residence)" span={2}>
             <TextField
               placeholder="Enter landmark"

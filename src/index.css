@@ -53,13 +53,15 @@
 }
 
 :root {
-  --blue-btn: linear-gradient(135deg, #2952CC 0%, #3E6EF5 100%);
-  --blue-text-color: #2952CC;
-   --side-menu :#E8F0FF;
-   --sidebar-top-bg: #14213D;
-  --medical-color:#147fc3;
+  --app-gradient: linear-gradient(180deg, rgb(14, 138, 180) 0%, rgb(10, 111, 156) 45%, rgb(7, 91, 134) 100%);
+  --blue-btn: var(--app-gradient);
+  --blue-text-color: #0a6f9c;
+  --side-menu :#E8F0FF;
+  --sidebar-top-bg: var(--app-gradient);
+  --table-header-bg: #13729d;
+  --medical-color:#0a6f9c;
   --bg-white: white;
- --layer-bg: #f8fafc; 
+  --layer-bg: #f8fafc; 
     --background: oklch(1 0 0);
     --foreground: oklch(0.145 0 0);
     --card: oklch(1 0 0);
@@ -92,6 +94,19 @@
     --sidebar-accent-foreground: oklch(0.205 0 0);
     --sidebar-border: oklch(0.922 0 0);
     --sidebar-ring: oklch(0.708 0 0);
+}
+
+.bg-app-gradient {
+  background: var(--app-gradient) !important;
+}
+
+.btn-app-gradient {
+  background: var(--app-gradient) !important;
+  color: #ffffff !important;
+}
+
+.btn-app-gradient:hover {
+  opacity: 0.93;
 }
 
 .dark {
