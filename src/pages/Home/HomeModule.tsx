@@ -56,7 +56,7 @@ export default function HomeModule() {
     // /admission/application-details/:id   => stepForm step 1 for student :id
     // /admission/:stepSlug                 => stepForm for new applicant
     const pathSegments = location.pathname.split('/').filter(Boolean)
-    
+
     let detectedStepSlug: string | undefined = undefined
     let detectedId: string | undefined = undefined
 
@@ -555,7 +555,7 @@ export default function HomeModule() {
             }
         } else {
             // Final submission on step 5 (Accept & Submit)
-            const saved = saveStudentRecord(isCreateMode)
+            // const saved = saveStudentRecord(isCreateMode)
             toast.success('All registration steps completed and submitted!')
             setIsSuccessModalOpen(true)
         }
@@ -613,7 +613,7 @@ export default function HomeModule() {
         setIsStep3Saved(true)
 
         // For Create Mode or standard mode, final completion creates/saves the record
-        const saved = saveStudentRecord(isCreateMode)
+        // const saved = saveStudentRecord(isCreateMode)
         setIsSuccessModalOpen(true)
         toast.success('All 5 registration steps completed!')
     }
@@ -754,11 +754,10 @@ export default function HomeModule() {
                                 <span>Student Master</span>
                             </button>
                         )}
-                        <span className={`px-2.5 py-1 rounded-md text-xs font-extrabold uppercase tracking-wider ${
-                            isReadOnly
-                                ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-200 border border-blue-200 dark:border-blue-800'
-                                : 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800'
-                        }`}>
+                        <span className={`px-2.5 py-1 rounded-md text-xs font-extrabold uppercase tracking-wider ${isReadOnly
+                            ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-200 border border-blue-200 dark:border-blue-800'
+                            : 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800'
+                            }`}>
                             {isReadOnly ? '👁️ View Mode (Read-Only)' : '✏️ Edit Mode'}
                         </span>
                         <span className="text-xs text-slate-600 dark:text-slate-300 font-medium">
