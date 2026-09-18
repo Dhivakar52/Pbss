@@ -3,7 +3,6 @@ import {
   ShieldCheck,
   Users,
   FileText,
-  BarChart3,
   LayoutDashboard,
   type LucideIcon,
 } from "lucide-react"

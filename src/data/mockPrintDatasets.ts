@@ -342,3 +342,36 @@ export const datasetEmptyOptional: PrintDocumentData = {
     branch: 'T.Nagar',
   },
 }
+
+export function createPrintDataFromStudent(student: any): PrintDocumentData {
+  if (!student) return datasetNormal
+  return {
+    ...datasetNormal,
+    registration: {
+      ...datasetNormal.registration,
+      registrationNo: student.registrationNumber || datasetNormal.registration.registrationNo,
+      childName: (student.studentName || datasetNormal.registration.childName).toUpperCase(),
+      dateOfBirth: student.date || datasetNormal.registration.dateOfBirth,
+      gender: student.gender || datasetNormal.registration.gender,
+      motherTongue: student.motherTongue || datasetNormal.registration.motherTongue,
+      religion: student.religion || datasetNormal.registration.religion,
+      caste: student.caste || datasetNormal.registration.caste,
+      community: student.community || datasetNormal.registration.community,
+    },
+    father: {
+      ...datasetNormal.father,
+      name: (student.fatherName || datasetNormal.father.name).toUpperCase(),
+      mobileNo: student.mobile || datasetNormal.father.mobileNo,
+      isAlumnus: student.alumni ?? datasetNormal.father.isAlumnus,
+    },
+    mother: {
+      ...datasetNormal.mother,
+      name: (student.motherName || datasetNormal.mother.name).toUpperCase(),
+    },
+    address: {
+      ...datasetNormal.address,
+      residentialAddress: student.area && student.city ? `${student.area}, ${student.city} - 600017` : datasetNormal.address.residentialAddress,
+      distanceFromResidence: student.distanceKm || datasetNormal.address.distanceFromResidence,
+    },
+  }
+}

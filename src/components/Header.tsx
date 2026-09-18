@@ -41,7 +41,7 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom"
 import { useTheme } from "@/context/ThemeContext"
 import { useAuth } from "@/context/AuthContext"
 import { toast } from "@/components/ui/toast"
-import { getMenuConfig, menuConfig, type MenuItem } from "@/config/menu.config"
+import { getMenuConfig, type MenuItem } from "@/config/menu.config"
 import Logo from "@/assets/images/logo.png"
 import { cn } from "@/lib/utils"
 

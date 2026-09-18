@@ -23,8 +23,24 @@ export const PrintPage: React.FC<PrintPageProps> = ({
     <div className="pbss-print-page relative box-border bg-white">
       {/* Left Vertical Gray Sidebar Title */}
       {showSidebar && (
-        <div className="pbss-left-sidebar">
-          <span>Padma Seshadri Bala Bhavan Senior Secondary School</span>
+        <div
+          className="pbss-left-sidebar"
+          style={{
+            backgroundColor: '#6e6e6e',
+            color: '#ffffff',
+            WebkitPrintColorAdjust: 'exact',
+            printColorAdjust: 'exact',
+          }}
+        >
+          <span
+            style={{
+              color: '#ffffff',
+              WebkitPrintColorAdjust: 'exact',
+              printColorAdjust: 'exact',
+            }}
+          >
+            Padma Seshadri Bala Bhavan Senior Secondary School
+          </span>
         </div>
       )}
 

@@ -3,29 +3,21 @@ import { useNavigate } from 'react-router-dom'
 import CustomPanel from '@/common/CustomPanel'
 import { mockStudents, type StudentRecord } from '@/data/mockStudents'
 import {
-  Search,
-  GraduationCap,
   ArrowLeft,
   Printer,
   Edit3,
   Trash2,
-  CheckCircle2,
-  Clock,
   User,
   MapPin,
-  Heart,
-  FileCheck,
   AlertTriangle,
-  Building,
-  Phone,
-  Briefcase,
-  BookOpen,
-  School
+  Briefcase
 } from 'lucide-react'
 import { toast } from '@/components/ui/toast'
 import logoImg from '@/assets/images/logo.png'
 import { AdminDataTable } from '@/components/AdminDataTable'
-import { Field, TextField, SelectField } from '@/components/FormPrimitives'
+import { Field, SelectField } from '@/components/FormPrimitives'
+import { PrintPreviewModal } from '@/components/PrintPreviewModal'
+import { createPrintDataFromStudent } from '@/data/mockPrintDatasets'
 
 export const AdminStudents: React.FC = () => {
   const navigate = useNavigate()
@@ -43,6 +35,10 @@ export const AdminStudents: React.FC = () => {
   // Separate Screen View State & Delete Modal State
   const [viewingStudent, setViewingStudent] = useState<StudentRecord | null>(null)
   const [deletingStudent, setDeletingStudent] = useState<StudentRecord | null>(null)
+
+  // Print Preview Modal State
+  const [printDocType, setPrintDocType] = useState<'registrationForm' | 'trackSheet' | null>(null)
+  const [printStudent, setPrintStudent] = useState<StudentRecord | null>(null)
 
   // Filter Handler
   const handleSearch = () => {
@@ -280,6 +276,8 @@ export const AdminStudents: React.FC = () => {
         title="Student Applications Master List"
         subtitle="Manage registered pre-kg applicants."
         data={students}
+        isFilterDrawerOpen={isFilterPanelOpen}
+        disableStickyCols={true}
         onView={handleView}
         onEdit={handleEdit}
         onAddNew={() => {
@@ -287,11 +285,32 @@ export const AdminStudents: React.FC = () => {
           navigate('/admission/application-details')
         }}
         onDelete={(student) => setDeletingStudent(student)}
+        onPrintRegistrationForm={(student) => {
+          setPrintStudent(student)
+          setPrintDocType('registrationForm')
+        }}
+        onPrintTrackSheet={(student) => {
+          setPrintStudent(student)
+          setPrintDocType('trackSheet')
+        }}
         showCheckmarkCols={true}
         onToggleFilterPanel={() => setIsFilterPanelOpen(true)}
         onExportExcel={() => toast.success("Exported Student Master List to Excel")}
         onPrint={() => window.print()}
       />
+
+      {/* ================= PRINT PREVIEW MODAL ================= */}
+      {printDocType && printStudent && (
+        <PrintPreviewModal
+          isOpen={!!printDocType}
+          documentType={printDocType}
+          data={createPrintDataFromStudent(printStudent)}
+          onClose={() => {
+            setPrintDocType(null)
+            setPrintStudent(null)
+          }}
+        />
+      )}
 
       {/* ================= CUSTOM SIDE DRAWER FILTER PANEL ================= */}
       <CustomPanel

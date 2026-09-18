@@ -229,11 +229,6 @@ button[role="combobox"] {
   overflow: visible;
 }
 
-.pbss-print-page:not(:last-child) {
-  page-break-after: always;
-  break-after: page;
-}
-
 .pbss-print-table {
   width: 100%;
   border-collapse: collapse;
@@ -255,13 +250,15 @@ button[role="combobox"] {
   top: 0;
   bottom: 0;
   left: 0;
-  width: 30px;
-  background-color: #6b7280;
-  color: #ffffff;
+  width: 46px;
+  background-color: #6e6e6e !important;
+  color: #ffffff !important;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 10;
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
 }
 
 .pbss-left-sidebar span {
@@ -269,13 +266,15 @@ button[role="combobox"] {
   transform: rotate(180deg);
   white-space: nowrap;
   font-weight: 700;
-  font-size: 11px;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
+  font-size: 19px;
+  letter-spacing: 0.3px;
+  text-transform: none;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #ffffff !important;
 }
 
 .pbss-page-content {
-  margin-left: 18px;
+  margin-left: 36px;
   height: 100%;
 }
 
@@ -384,11 +383,6 @@ button[role="combobox"] {
     overflow: visible !important;
   }
 
-  .pbss-print-page:not(:last-child) {
-    page-break-after: always !important;
-    break-after: page !important;
-  }
-
   .pbss-print-table {
     width: 100% !important;
     border-collapse: collapse !important;
@@ -411,6 +405,36 @@ button[role="combobox"] {
   .pbss-page-content,
   .pbss-page-content-full {
     overflow: visible !important;
+  }
+
+  /* Repeat Left Vertical Sidebar on EVERY physical printed A4 page */
+  .pbss-left-sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    height: 100% !important;
+    width: 46px !important;
+    background-color: #6e6e6e !important;
+    color: #ffffff !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 99999 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .pbss-left-sidebar span {
+    writing-mode: vertical-rl !important;
+    transform: rotate(180deg) !important;
+    white-space: nowrap !important;
+    font-weight: 700 !important;
+    font-size: 19px !important;
+    letter-spacing: 0.3px !important;
+    text-transform: none !important;
+    font-family: Arial, Helvetica, sans-serif !important;
+    color: #ffffff !important;
   }
 
   /* Document element inside standalone portal uses full 100% A4 page width */
