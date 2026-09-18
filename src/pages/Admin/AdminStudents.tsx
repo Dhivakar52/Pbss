@@ -1,24 +1,19 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import CustomPanel from '@/common/CustomPanel'
-import { mockStudents, type StudentRecord } from '@/data/mockStudents'
+import { type StudentRecord } from '@/data/mockStudents'
+import { useStudentStore } from '@/store/useStudentStore'
 import {
-  ArrowLeft,
-  Printer,
-  Edit3,
   Trash2,
-  User,
-  MapPin,
   AlertTriangle,
-  Briefcase
 } from 'lucide-react'
 import { toast } from '@/components/ui/toast'
-import logoImg from '@/assets/images/logo.png'
 import { AdminDataTable } from '@/components/AdminDataTable'
 import { Field, SelectField } from '@/components/FormPrimitives'
 
 export const AdminStudents: React.FC = () => {
   const navigate = useNavigate()
+  const { students, deleteStudent } = useStudentStore()
 
   // Filter panel state (Default to empty - no preselected values)
   const [academicYear, setAcademicYear] = useState('')
@@ -27,24 +22,90 @@ export const AdminStudents: React.FC = () => {
   const [applnTo, setApplnTo] = useState('')
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false)
 
-  // Active student list state
-  const [students, setStudents] = useState<StudentRecord[]>(mockStudents)
+  // Extract available application numbers from existing student data
+  const availableApplnNumbers = useMemo(() => {
+    const set = new Set<string>()
+    students.forEach((s) => {
+      if (s.id && /^\d+$/.test(s.id)) set.add(s.id)
+      const regDigits = s.registrationNumber ? s.registrationNumber.replace(/\D/g, '') : ''
+      if (regDigits) set.add(regDigits)
+    })
+    return Array.from(set).sort((a, b) => Number(a) - Number(b))
+  }, [students])
 
-  // Separate Screen View State & Delete Modal State
-  const [viewingStudent, setViewingStudent] = useState<StudentRecord | null>(null)
+  // Filtered suggestions for 'From'
+  const fromSuggestions = useMemo(() => {
+    const trimmed = applnFrom.trim()
+    if (!trimmed) return []
+    return availableApplnNumbers.filter((num) => num.startsWith(trimmed) || num.includes(trimmed))
+  }, [availableApplnNumbers, applnFrom])
+
+  // Filtered suggestions for 'To'
+  const toSuggestions = useMemo(() => {
+    const trimmed = applnTo.trim()
+    if (!trimmed) return []
+    return availableApplnNumbers.filter((num) => num.startsWith(trimmed) || num.includes(trimmed))
+  }, [availableApplnNumbers, applnTo])
+
+  // Suggestion popup visibility states
+  const [showFromSuggestions, setShowFromSuggestions] = useState(false)
+  const [showToSuggestions, setShowToSuggestions] = useState(false)
+
+  // Active filter state
+  const [filters, setFilters] = useState({
+    academicYear: '',
+    schoolBranch: '',
+    applnFrom: '',
+    applnTo: '',
+  })
+
+  // Delete Modal State
   const [deletingStudent, setDeletingStudent] = useState<StudentRecord | null>(null)
 
-  // Filter Handler
-  const handleSearch = () => {
-    let filtered = mockStudents.filter((item) => {
-      if (academicYear && item.academicYear !== academicYear) return false
-      if (schoolBranch && item.schoolBranch !== schoolBranch) return false
-      if (applnFrom && item.registrationNumber < applnFrom) return false
-      if (applnTo && item.registrationNumber > applnTo) return false
+  // Helper to extract numeric application value for comparison
+  const getApplnNumericValue = (student: StudentRecord): number => {
+    if (student.id && !isNaN(Number(student.id))) {
+      return Number(student.id)
+    }
+    const digits = student.registrationNumber ? student.registrationNumber.replace(/\D/g, '') : ''
+    return digits ? Number(digits) : NaN
+  }
+
+  // Filtered Students
+  const filteredStudents = useMemo(() => {
+    const fromNum = filters.applnFrom ? Number(filters.applnFrom) : null
+    const toNum = filters.applnTo ? Number(filters.applnTo) : null
+
+    return students.filter((item) => {
+      if (filters.academicYear && item.academicYear !== filters.academicYear) return false
+      if (filters.schoolBranch && item.schoolBranch !== filters.schoolBranch) return false
+
+      const studentApplnNum = getApplnNumericValue(item)
+      if (!isNaN(studentApplnNum)) {
+        if (fromNum !== null && !isNaN(fromNum) && studentApplnNum < fromNum) return false
+        if (toNum !== null && !isNaN(toNum) && studentApplnNum > toNum) return false
+      } else {
+        // Fallback to string comparison if not purely numeric
+        if (filters.applnFrom && item.registrationNumber < filters.applnFrom) return false
+        if (filters.applnTo && item.registrationNumber > filters.applnTo) return false
+      }
+
       return true
     })
-    setStudents(filtered)
-    toast.success(`Filtered ${filtered.length} student records`)
+  }, [students, filters])
+
+  // Filter Handler
+  const handleApplyFilter = () => {
+    setFilters({
+      academicYear,
+      schoolBranch,
+      applnFrom,
+      applnTo,
+    })
+    setIsFilterPanelOpen(false)
+    setShowFromSuggestions(false)
+    setShowToSuggestions(false)
+    toast.success('Filters applied successfully')
   }
 
   // Clear Filter
@@ -53,228 +114,47 @@ export const AdminStudents: React.FC = () => {
     setSchoolBranch('')
     setApplnFrom('')
     setApplnTo('')
-    setStudents(mockStudents)
+    setShowFromSuggestions(false)
+    setShowToSuggestions(false)
+    setFilters({
+      academicYear: '',
+      schoolBranch: '',
+      applnFrom: '',
+      applnTo: '',
+    })
     toast.info('Search filters reset')
   }
 
-  // 1. Edit Action Handler (Navigates to /admission/application-details with prefilled data)
+  // 1. Edit Action Handler (Navigates to /admission/:id?mode=edit)
   const handleEdit = (student: StudentRecord) => {
-    localStorage.setItem('editingStudent', JSON.stringify(student))
-    localStorage.setItem('fromAdmin', 'true')
-    toast.success(`Opening Application Details form to edit ${student.studentName} (${student.registrationNumber})`)
-    navigate('/admission/application-details')
+    navigate(`/admission/${student.id}?mode=edit`)
   }
 
-  // 2. View Action Handler
-  const handleView = (student: StudentRecord) => {
-    setViewingStudent(student)
+  // 2. Select ID / View Action Handler (Navigates to /admission/:id?mode=view)
+  const handleSelectStudent = (student: StudentRecord) => {
+    navigate(`/admission/${student.id}?mode=view`)
   }
 
   // 3. Delete Action Handler
   const handleDeleteConfirm = () => {
     if (!deletingStudent) return
-    setStudents((prev) => prev.filter((s) => s.id !== deletingStudent.id))
+    deleteStudent(deletingStudent.id)
     toast.success(`Deleted student record: ${deletingStudent.registrationNumber}`)
     setDeletingStudent(null)
   }
 
-  // ================= 1. DEDICATED SEPARATE FULL VIEW SCREEN (NOT MODAL) =================
-  if (viewingStudent) {
-    const s = viewingStudent
-    return (
-      <div className="space-y-6">
-        {/* Top Header Controls Bar */}
-        <div className="flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs">
-          <button
-            type="button"
-            onClick={() => setViewingStudent(null)}
-            className="h-9 px-4 rounded-xl border border-slate-300 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center gap-2 cursor-pointer"
-          >
-            <ArrowLeft className="h-4 w-4" /> Back to Student List
-          </button>
-
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => window.print()}
-              className="h-9 px-4 rounded-xl border border-purple-300 bg-purple-50 text-purple-700 hover:bg-purple-100 text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-2xs"
-            >
-              <Printer className="h-4 w-4" /> Print Full Application
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleEdit(s)}
-              className="h-9 px-5 rounded-xl bg-[#1677FF] hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm"
-            >
-              <Edit3 className="h-4 w-4" /> Edit Application Details
-            </button>
-          </div>
-        </div>
-
-        {/* Detailed Summary Banner */}
-        <div
-          className="text-white p-6 rounded-2xl shadow-md border-b-4 border-[#8dc63f] flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
-          style={{ background: "var(--app-gradient)" }}
-        >
-          <div className="flex items-center gap-4">
-            <img src={logoImg} className="h-16 w-auto object-contain bg-white/10 p-2 rounded-xl border border-white/20" alt="Logo" />
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-xl font-extrabold uppercase tracking-wide">{s.studentName}</h1>
-                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-400 text-emerald-950">
-                  {s.applicationStatus}
-                </span>
-              </div>
-              <p className="text-xs text-white/90 font-mono mt-1 font-semibold">
-                Registration No: <span className="bg-white/20 px-2 py-0.5 rounded text-white font-bold">{s.registrationNumber}</span> | Academic Year: {s.academicYear}
-              </p>
-              <p className="text-xs text-white/80 font-medium mt-0.5">
-                School Branch: {s.schoolBranch} | Applied Date: {s.date}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Full Details Cards Grid */}
-        <div className="space-y-6">
-          {/* Card 1: Child / Applicant Information */}
-          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
-            <div className="flex items-center gap-2 text-sm font-bold text-[#0F294A] dark:text-white border-b pb-3">
-              <User className="h-5 w-5 text-blue-600" />
-              <span>1. Child & Personal Information</span>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs">
-              <div className="bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
-                <span className="text-slate-500 font-medium block">Child Full Name</span>
-                <span className="font-bold text-slate-900 dark:text-white text-sm">{s.studentName}</span>
-              </div>
-
-              <div className="bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
-                <span className="text-slate-500 font-medium block">Gender</span>
-                <span className="font-bold text-slate-900 dark:text-white text-sm">{s.gender}</span>
-              </div>
-
-              <div className="bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
-                <span className="text-slate-500 font-medium block">Date of Birth</span>
-                <span className="font-bold text-slate-900 dark:text-white text-sm">{s.date}</span>
-              </div>
-
-              <div className="bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
-                <span className="text-slate-500 font-medium block">Mother Tongue</span>
-                <span className="font-bold text-slate-900 dark:text-white text-sm">{s.motherTongue}</span>
-              </div>
-
-              <div className="bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
-                <span className="text-slate-500 font-medium block">Nationality</span>
-                <span className="font-bold text-slate-900 dark:text-white text-sm">Indian</span>
-              </div>
-
-              <div className="bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
-                <span className="text-slate-500 font-medium block">Religion</span>
-                <span className="font-bold text-slate-900 dark:text-white text-sm">{s.religion}</span>
-              </div>
-
-              <div className="bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
-                <span className="text-slate-500 font-medium block">Caste / Community</span>
-                <span className="font-bold text-slate-900 dark:text-white text-sm">{s.caste} ({s.community})</span>
-              </div>
-
-              <div className="bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
-                <span className="text-slate-500 font-medium block">Goes to Play School</span>
-                <span className="font-bold text-slate-900 dark:text-white text-sm">{s.playSchool ? 'Yes' : 'No'}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Card 2: Father Information */}
-          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
-            <div className="flex items-center gap-2 text-sm font-bold text-[#0F294A] dark:text-white border-b pb-3">
-              <Briefcase className="h-5 w-5 text-purple-600" />
-              <span>2. Father's Details</span>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs">
-              <div className="bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
-                <span className="text-slate-500 font-medium block">Father Name</span>
-                <span className="font-bold text-slate-900 dark:text-white text-sm">{s.fatherName}</span>
-              </div>
-
-              <div className="bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
-                <span className="text-slate-500 font-medium block">Mobile Number</span>
-                <span className="font-bold text-slate-900 dark:text-white text-sm">{s.mobile}</span>
-              </div>
-
-              <div className="bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
-                <span className="text-slate-500 font-medium block">Monthly Income Range</span>
-                <span className="font-bold text-slate-900 dark:text-white text-sm">{s.incomeRange}</span>
-              </div>
-
-              <div className="bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
-                <span className="text-slate-500 font-medium block">Alumni Student</span>
-                <span className="font-bold text-slate-900 dark:text-white text-sm">{s.alumni ? 'Yes (PSBB Alumnus)' : 'No'}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Card 3: Mother Information */}
-          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
-            <div className="flex items-center gap-2 text-sm font-bold text-[#0F294A] dark:text-white border-b pb-3">
-              <User className="h-5 w-5 text-emerald-600" />
-              <span>3. Mother's Details</span>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs">
-              <div className="bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
-                <span className="text-slate-500 font-medium block">Mother Name</span>
-                <span className="font-bold text-slate-900 dark:text-white text-sm">{s.motherName}</span>
-              </div>
-
-              <div className="bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
-                <span className="text-slate-500 font-medium block">Siblings Studying in PSBB</span>
-                <span className="font-bold text-slate-900 dark:text-white text-sm">{s.siblingsStudying ? 'Yes' : 'No'}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Card 4: Address & Communication */}
-          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
-            <div className="flex items-center gap-2 text-sm font-bold text-[#0F294A] dark:text-white border-b pb-3">
-              <MapPin className="h-5 w-5 text-amber-600" />
-              <span>4. Residential Address & Communication</span>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-xs">
-              <div className="bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-100 dark:border-slate-800 col-span-2">
-                <span className="text-slate-500 font-medium block">Residential Address</span>
-                <span className="font-bold text-slate-900 dark:text-white text-sm">{s.area}, {s.city}</span>
-              </div>
-
-              <div className="bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
-                <span className="text-slate-500 font-medium block">Distance from School</span>
-                <span className="font-bold text-slate-900 dark:text-white text-sm">{s.distanceKm}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  // ================= 2. MAIN STUDENT LIST & TABLE VIEW =================
   return (
     <div className="space-y-6">
       {/* DATA TABLE WITH INTEGRATED CUSTOM FILTER PANEL VIA POPOVER FILTER ICON */}
       <AdminDataTable
         title="Student Applications Master List"
-        subtitle="Manage registered pre-kg applicants."
-        data={students}
-        onView={handleView}
+        subtitle="Manage registered pre-kg applicants. Click any Reg Number or ID to view complete application details."
+        data={filteredStudents}
+        onSelectId={handleSelectStudent}
+        onView={handleSelectStudent}
         onEdit={handleEdit}
         onAddNew={() => {
-          localStorage.setItem('fromAdmin', 'true')
-          navigate('/admission/application-details')
+          navigate('/admission/add')
         }}
         onDelete={(student) => setDeletingStudent(student)}
         showCheckmarkCols={true}
@@ -287,11 +167,12 @@ export const AdminStudents: React.FC = () => {
       <CustomPanel
         isOpen={isFilterPanelOpen}
         title="Student Custom Filter Panel"
-        onClose={() => setIsFilterPanelOpen(false)}
-        onSave={() => {
-          handleSearch()
+        onClose={() => {
           setIsFilterPanelOpen(false)
+          setShowFromSuggestions(false)
+          setShowToSuggestions(false)
         }}
+        onSave={handleApplyFilter}
         saveLabel="Apply Filters"
         width="480px"
       >
@@ -314,28 +195,130 @@ export const AdminStudents: React.FC = () => {
             />
           </Field>
 
+          {/* Appln No Range From with Number Input & Live Suggestions */}
           <Field label="Appln No Range From">
-            <SelectField
-              value={applnFrom}
-              onChange={(val) => setApplnFrom(val)}
-              placeholder="-- Select --"
-              options={[
-                "T25-0001", "T25-0002", "T25-0003", "T25-0004", "T25-0005",
-                "T25-0006", "T25-0007", "T25-0008", "T25-0009", "T25-0010"
-              ]}
-            />
+            <div className="relative">
+              <input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                placeholder="Enter from application number"
+                value={applnFrom}
+                onFocus={() => setShowFromSuggestions(true)}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, '')
+                  setApplnFrom(val)
+                  setShowFromSuggestions(true)
+                }}
+                className="w-full h-9 px-3 text-[13px] font-mono rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+              />
+              {applnFrom && (
+                <button
+                  type="button"
+                  tabIndex={-1}
+                  onClick={() => {
+                    setApplnFrom('')
+                    setShowFromSuggestions(false)
+                  }}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-xs cursor-pointer font-bold px-1"
+                >
+                  ✕
+                </button>
+              )}
+
+              {/* Suggestions Dropdown */}
+              {showFromSuggestions && fromSuggestions.length > 0 && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setShowFromSuggestions(false)}
+                  />
+                  <div className="absolute left-0 right-0 top-full mt-1 z-50 max-h-48 overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg py-1 animate-in fade-in zoom-in-95">
+                    <div className="px-2.5 py-1 text-[11px] font-semibold text-slate-400 uppercase tracking-wider border-b border-slate-100 dark:border-slate-800">
+                      Suggestions
+                    </div>
+                    {fromSuggestions.map((num) => (
+                      <button
+                        key={num}
+                        type="button"
+                        onMouseDown={(e) => {
+                          e.preventDefault()
+                          setApplnFrom(num)
+                          setShowFromSuggestions(false)
+                        }}
+                        className="w-full text-left px-3 py-1.5 text-xs font-mono font-medium text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-blue-950/50 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer flex items-center justify-between"
+                      >
+                        <span>{num}</span>
+                        <span className="text-[10px] text-slate-400 font-sans">Click to select</span>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
           </Field>
 
+          {/* Appln No Range To with Number Input & Live Suggestions */}
           <Field label="Appln No Range To">
-            <SelectField
-              value={applnTo}
-              onChange={(val) => setApplnTo(val)}
-              placeholder="-- Select --"
-              options={[
-                "T25-0001", "T25-0002", "T25-0003", "T25-0004", "T25-0005",
-                "T25-0006", "T25-0007", "T25-0008", "T25-0009", "T25-0010"
-              ]}
-            />
+            <div className="relative">
+              <input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                placeholder="Enter to application number"
+                value={applnTo}
+                onFocus={() => setShowToSuggestions(true)}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, '')
+                  setApplnTo(val)
+                  setShowToSuggestions(true)
+                }}
+                className="w-full h-9 px-3 text-[13px] font-mono rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+              />
+              {applnTo && (
+                <button
+                  type="button"
+                  tabIndex={-1}
+                  onClick={() => {
+                    setApplnTo('')
+                    setShowToSuggestions(false)
+                  }}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-xs cursor-pointer font-bold px-1"
+                >
+                  ✕
+                </button>
+              )}
+
+              {/* Suggestions Dropdown */}
+              {showToSuggestions && toSuggestions.length > 0 && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setShowToSuggestions(false)}
+                  />
+                  <div className="absolute left-0 right-0 top-full mt-1 z-50 max-h-48 overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg py-1 animate-in fade-in zoom-in-95">
+                    <div className="px-2.5 py-1 text-[11px] font-semibold text-slate-400 uppercase tracking-wider border-b border-slate-100 dark:border-slate-800">
+                      Suggestions
+                    </div>
+                    {toSuggestions.map((num) => (
+                      <button
+                        key={num}
+                        type="button"
+                        onMouseDown={(e) => {
+                          e.preventDefault()
+                          setApplnTo(num)
+                          setShowToSuggestions(false)
+                        }}
+                        className="w-full text-left px-3 py-1.5 text-xs font-mono font-medium text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-blue-950/50 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer flex items-center justify-between"
+                      >
+                        <span>{num}</span>
+                        <span className="text-[10px] text-slate-400 font-sans">Click to select</span>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
           </Field>
 
           <div className="pt-3 flex justify-between items-center border-t border-slate-200 dark:border-slate-800">
@@ -367,11 +350,11 @@ export const AdminStudents: React.FC = () => {
               Are you sure you want to delete registration <span className="font-mono font-bold text-rose-600">{deletingStudent.registrationNumber}</span> for <span className="font-bold text-slate-900 dark:text-white">{deletingStudent.studentName}</span>? This action cannot be undone.
             </p>
 
-            <div className="flex justify-end gap-3 pt-3 border-t">
+            <div className="flex justify-end gap-3 pt-3 border-t border-slate-200 dark:border-slate-800">
               <button
                 type="button"
                 onClick={() => setDeletingStudent(null)}
-                className="h-9 px-4 rounded-xl border border-slate-300 text-xs font-semibold hover:bg-slate-100 cursor-pointer"
+                className="h-9 px-4 rounded-xl border border-slate-300 dark:border-slate-700 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
               >
                 Cancel
               </button>
@@ -389,3 +372,5 @@ export const AdminStudents: React.FC = () => {
     </div>
   )
 }
+
+export default AdminStudents

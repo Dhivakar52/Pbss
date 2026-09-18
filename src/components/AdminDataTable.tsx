@@ -38,6 +38,7 @@ interface AdminDataTableProps {
   onEdit?: (record: StudentRecord) => void
   onDelete?: (record: StudentRecord) => void
   onAddNew?: () => void
+  onSelectId?: (record: StudentRecord) => void
   showCheckmarkCols?: boolean
   customFilterPanel?: React.ReactNode
   onExportExcel?: () => void
@@ -54,6 +55,7 @@ export const AdminDataTable: React.FC<AdminDataTableProps> = ({
   onEdit,
   onDelete,
   onAddNew,
+  onSelectId,
   showCheckmarkCols = true,
   customFilterPanel,
   onExportExcel,
@@ -371,7 +373,24 @@ export const AdminDataTable: React.FC<AdminDataTableProps> = ({
                   className="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors border-b border-slate-100 dark:border-slate-800/60"
                 >
                   <td className="py-3 px-3.5 text-center font-mono text-slate-500">{startIndex + idx + 1}</td>
-                  <td className="py-3 px-4 font-mono font-bold text-blue-700 dark:text-blue-400">{row.registrationNumber}</td>
+                  <td className="py-3 px-4 font-mono font-bold text-blue-700 dark:text-blue-400">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (onSelectId) onSelectId(row)
+                        else if (onView) onView?.(row)
+                      }}
+                      className="hover:underline text-[#1677FF] dark:text-blue-400 font-mono font-bold cursor-pointer text-left inline-flex items-center gap-1.5 group"
+                      title={`Click to view application details for ID ${row.id}`}
+                    >
+                      <span className="group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors">
+                        {row.registrationNumber}
+                      </span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900 font-mono font-semibold">
+                        {row.id}
+                      </span>
+                    </button>
+                  </td>
                   <td className="py-3 px-4 font-bold text-slate-900 dark:text-white">{row.studentName}</td>
                   <td className="py-3 px-4 text-slate-600 dark:text-slate-400">{row.fatherName}</td>
                   <td className="py-3 px-4">{row.schoolBranch}</td>

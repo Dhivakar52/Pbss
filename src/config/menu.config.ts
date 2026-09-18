@@ -79,6 +79,13 @@ export const getRoutes = () => {
       exact: true,
       protected: false,
     },
+    {
+      path: "/verify-otp",
+      name: "VerifyOtp",
+      component: lazy(() => import("@/pages/VerifyOtp")),
+      exact: true,
+      protected: false,
+    },
 
     // ============ PROTECTED ROUTES ============
     {
@@ -96,8 +103,29 @@ export const getRoutes = () => {
       protected: true,
     },
     {
+      path: "/admission/application-details/:id",
+      name: "AdmissionApplicationDetails",
+      component: lazy(() => import("@/pages/Home/HomeModule")),
+      exact: true,
+      protected: true,
+    },
+    {
+      path: "/admission/:stepSlug/:id",
+      name: "AdmissionStepWithId",
+      component: lazy(() => import("@/pages/Home/HomeModule")),
+      exact: true,
+      protected: true,
+    },
+    {
       path: "/admission/:stepSlug",
       name: "AdmissionStep",
+      component: lazy(() => import("@/pages/Home/HomeModule")),
+      exact: true,
+      protected: true,
+    },
+    {
+      path: "/admission/:id",
+      name: "AdmissionWithId",
       component: lazy(() => import("@/pages/Home/HomeModule")),
       exact: true,
       protected: true,

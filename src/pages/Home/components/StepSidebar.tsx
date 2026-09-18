@@ -1,5 +1,5 @@
 import React from 'react'
-import { ArrowLeft, CheckCircle2, Printer, Lock } from 'lucide-react'
+import { ArrowLeft, CheckCircle2, Printer, Lock, ChevronRight } from 'lucide-react'
 import type { Step } from '../types'
 
 interface StepSidebarProps {
@@ -58,16 +58,21 @@ export const StepSidebar: React.FC<StepSidebarProps> = ({
             return (
               <div
                 key={step.id}
-                onClick={() => onStepSelect(step.id)}
+                onClick={() => {
+                  if (isLocked) {
+                    return
+                  }
+                  onStepSelect(step.id)
+                }}
                 className={`flex items-center justify-between p-3 rounded-xl transition-all ${
                   isLocked
-                    ? 'opacity-50 cursor-not-allowed text-slate-400 dark:text-slate-600 bg-slate-50/50 dark:bg-slate-900/40'
+                    ? 'opacity-50 cursor-not-allowed text-slate-400 dark:text-slate-600 bg-slate-50/50 dark:bg-slate-900/40 select-none'
                     : isActive
                     ? 'bg-[#E6F4FF] dark:bg-blue-950/50 text-[#1677FF] dark:text-blue-400 font-bold shadow-2xs cursor-pointer'
                     : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60 cursor-pointer'
                 }`}
               >
-                <div className="flex items-center gap-3 truncate pr-1">
+                <div className="flex items-center gap-3 min-w-0 pr-2">
                   <div
                     className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
                       isDone
@@ -88,10 +93,18 @@ export const StepSidebar: React.FC<StepSidebarProps> = ({
                     )}
                   </div>
                   <span className="text-xs font-medium truncate">
-                    {step.title} {step.id === 3 && <span className="text-slate-400 dark:text-slate-500 font-normal">(Optional)</span>}
+                    {step.title} {step.id === 3 && <span className="text-slate-400 dark:text-slate-500 font-normal text-[11px]">(Optional)</span>}
                   </span>
                 </div>
-                {isLocked && <Lock className="h-3 w-3 text-slate-400 shrink-0" />}
+                <div className="shrink-0 flex items-center">
+                  {isLocked ? (
+                    <Lock className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
+                  ) : isDone ? (
+                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                  ) : (
+                    <ChevronRight className={`h-3.5 w-3.5 ${isActive ? 'text-[#1677FF] dark:text-blue-400' : 'text-slate-400 dark:text-slate-500'}`} />
+                  )}
+                </div>
               </div>
             )
           })}

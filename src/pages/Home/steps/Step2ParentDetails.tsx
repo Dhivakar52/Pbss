@@ -13,6 +13,7 @@ interface Step2ParentDetailsProps {
   onClear: () => void
   onSaveAndExit: () => void
   onSaveAndNext: () => void
+  isReadOnly?: boolean
 }
 
 const parseDate = (val?: string) => {
@@ -29,6 +30,7 @@ export const Step2ParentDetails: React.FC<Step2ParentDetailsProps> = ({
   onClear,
   onSaveAndExit,
   onSaveAndNext,
+  isReadOnly = false,
 }) => {
   const [showErrors, setShowErrors] = useState(false)
 
@@ -104,7 +106,8 @@ export const Step2ParentDetails: React.FC<Step2ParentDetailsProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* 1. Father's Details Card */}
+      <fieldset disabled={isReadOnly} className={isReadOnly ? "space-y-6 border-none p-0 m-0 disabled:opacity-95" : "space-y-6 border-none p-0 m-0"}>
+        {/* 1. Father's Details Card */}
       <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-2xs space-y-4">
         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
           <div className="flex items-center gap-2 text-sm font-bold text-[#0F294A]">
@@ -562,29 +565,34 @@ export const Step2ParentDetails: React.FC<Step2ParentDetailsProps> = ({
           </Field>
         </div>
       </div>
+      </fieldset>
 
       {/* Bottom Actions */}
       <div className="flex items-center justify-end gap-3 pt-3">
+        {!isReadOnly && (
+          <>
+            <button
+              type="button"
+              onClick={onClear}
+              className="h-9 px-4 rounded-xl text-xs font-semibold border border-slate-300 text-slate-700 hover:bg-slate-100 transition-all cursor-pointer flex items-center gap-1.5 bg-white"
+            >
+              <RotateCcw className="h-3.5 w-3.5" /> Clear
+            </button>
+            <button
+              type="button"
+              onClick={onSaveAndExit}
+              className="h-9 px-4 rounded-xl text-xs font-semibold border border-blue-500 text-[#1677FF] hover:bg-blue-50 transition-all cursor-pointer flex items-center gap-1.5 bg-white"
+            >
+              <Save className="h-3.5 w-3.5" /> Save & Exit
+            </button>
+          </>
+        )}
         <button
           type="button"
-          onClick={onClear}
-          className="h-9 px-4 rounded-xl text-xs font-semibold border border-slate-300 text-slate-700 hover:bg-slate-100 transition-all cursor-pointer flex items-center gap-1.5 bg-white"
-        >
-          <RotateCcw className="h-3.5 w-3.5" /> Clear
-        </button>
-        <button
-          type="button"
-          onClick={onSaveAndExit}
-          className="h-9 px-4 rounded-xl text-xs font-semibold border border-blue-500 text-[#1677FF] hover:bg-blue-50 transition-all cursor-pointer flex items-center gap-1.5 bg-white"
-        >
-          <Save className="h-3.5 w-3.5" /> Save & Exit
-        </button>
-        <button
-          type="button"
-          onClick={handleNext}
+          onClick={isReadOnly ? onSaveAndNext : handleNext}
           className="h-9 px-5 rounded-xl text-xs font-semibold bg-[#1677FF] hover:bg-[#0958D9] text-white shadow-2xs transition-all cursor-pointer flex items-center gap-1.5"
         >
-          Save & Next <ArrowRight className="h-3.5 w-3.5" />
+          {isReadOnly ? 'Next Step' : 'Save & Next'} <ArrowRight className="h-3.5 w-3.5" />
         </button>
       </div>
     </div>

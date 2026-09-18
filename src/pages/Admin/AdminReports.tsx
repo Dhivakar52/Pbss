@@ -84,10 +84,7 @@ export const AdminReports: React.FC = () => {
 
   // Edit Action Handler
   const handleEdit = (student: StudentRecord) => {
-    localStorage.setItem('editingStudent', JSON.stringify(student))
-    localStorage.setItem('fromAdmin', 'true')
-    toast.success(`Opening Application Details form to edit ${student.studentName}`)
-    navigate('/admission/application-details')
+    navigate(`/admission/${student.id}?mode=edit`)
   }
 
   // Delete Action Handler
