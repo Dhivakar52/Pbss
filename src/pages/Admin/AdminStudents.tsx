@@ -179,13 +179,32 @@ export const AdminStudents: React.FC = () => {
           navigate('/admission/add')
         }}
         onDelete={(student) => setDeletingStudent(student)}
-        onPrintTrackSheet={handlePrintTrackSheet}
-        onPrintRegistrationForm={handlePrintRegistrationForm}
+        onPrintRegistrationForm={(student) => {
+          setPrintStudent(student)
+          setPrintDocType('registrationForm')
+        }}
+        onPrintTrackSheet={(student) => {
+          setPrintStudent(student)
+          setPrintDocType('trackSheet')
+        }}
         showCheckmarkCols={true}
         onToggleFilterPanel={() => setIsFilterPanelOpen(true)}
         onExportExcel={() => toast.success("Exported Student Master List to Excel")}
         onPrint={() => window.print()}
       />
+
+      {/* ================= PRINT PREVIEW MODAL ================= */}
+      {printDocType && printStudent && (
+        <PrintPreviewModal
+          isOpen={!!printDocType}
+          documentType={printDocType}
+          data={createPrintDataFromStudent(printStudent)}
+          onClose={() => {
+            setPrintDocType(null)
+            setPrintStudent(null)
+          }}
+        />
+      )}
 
       {/* ================= CUSTOM SIDE DRAWER FILTER PANEL ================= */}
       <CustomPanel
