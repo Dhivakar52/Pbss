@@ -111,10 +111,10 @@
 }
 
 .animate-marquee {
-  display: inline-flex;
+  display: flex;
   white-space: nowrap;
   will-change: transform;
-  animation: marquee 50s linear infinite;
+  animation: marquee 100s linear infinite;
 }
 
 .animate-marquee:hover {

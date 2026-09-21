@@ -984,24 +984,6 @@ export default function HomeModule() {
                 </div>
             )}
 
-            {/* CONTINUOUS ANIMATED MARQUEE TICKER BANNER AT BOTTOM OF ADMISSION */}
-            <div className="overflow-hidden rounded-2xl text-white p-3 shadow-lg border border-white/20 relative flex items-center gap-3 bg-app-gradient" style={{ background: "var(--app-gradient)" }}>
-                <div className="bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-xl font-extrabold text-xs tracking-wider uppercase flex items-center gap-1.5 shrink-0 z-10 shadow-xs border border-white/30">
-                    <span className="w-2.5 h-2.5 rounded-full bg-yellow-300 animate-ping"></span>
-                    <span className="text-yellow-200">IMPORTANT NOTICE</span>
-                </div>
-                <div className="overflow-hidden w-full relative">
-                    <div className="animate-marquee font-bold text-xs sm:text-sm tracking-wide flex items-center gap-8">
-                        <span>⚠️ Last Day of Submission : <strong className="underline decoration-yellow-300 underline-offset-4 text-yellow-200 font-extrabold text-sm sm:text-base">30-09-2026</strong></span>
-                        <span>•</span>
-                        <span>📋 Please complete and submit all required application steps before the deadline</span>
-                        <span>•</span>
-                        <span>⚠️ Last Day of Submission : <strong className="underline decoration-yellow-300 underline-offset-4 text-yellow-200 font-extrabold text-sm sm:text-base">30-09-2026</strong></span>
-                        <span>•</span>
-                        <span>📋 Please complete and submit all required application steps before the deadline</span>
-                    </div>
-                </div>
-            </div>
 
             {/* REGISTRATION SUCCESS DETAILS MODAL */}
             <RegistrationSuccessModal

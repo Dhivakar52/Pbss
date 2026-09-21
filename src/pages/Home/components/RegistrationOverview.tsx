@@ -7,7 +7,8 @@ import {
   RotateCcw,
   Sparkles,
   Eye,
-  Lock
+  Lock,
+  Bell
 } from 'lucide-react'
 import type { Step } from '../types'
 
@@ -293,6 +294,67 @@ export const RegistrationOverview: React.FC<RegistrationOverviewProps> = ({
                 >
                   <Printer className="h-3.5 w-3.5" /> Print Registration Form
                 </button>
+              </div>
+            </div>
+
+            {/* Important Notice Card */}
+            <div className="p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-800/40 flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all overflow-hidden">
+              <div className="flex items-start gap-3.5 shrink-0">
+                <div className="w-11 h-11 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
+                  <Bell className="h-5 w-5" />
+                </div>
+
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-xs font-bold text-slate-900 dark:text-white">Important Notice</h3>
+                    <span className="w-[84px] h-7 flex items-center justify-center text-[10px] font-bold tracking-wider rounded-md bg-[#FFF7E6] dark:bg-amber-950/60 text-[#D46B08] dark:text-amber-400 uppercase border border-[#FFD591] dark:border-amber-900 shadow-2xs">
+                      NOTICE
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                    Admissions deadline & submission guidelines.
+                  </p>
+                  {/* <p className="text-[11px] text-slate-400 dark:text-slate-500 font-normal">
+                    Note: Last day of application submission is 30-09-2026.
+                  </p> */}
+                </div>
+              </div>
+
+              {/* Right Side Animation */}
+              <div className="w-full md:w-auto md:flex-1 md:max-w-[340px] lg:max-w-[370px] overflow-hidden relative rounded-xl bg-amber-50/50 dark:bg-slate-900/80 border border-amber-200/70 dark:border-slate-800 py-2.5 px-3 shadow-2xs">
+                {/* Soft gradient masks at edges */}
+                <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-amber-50/90 dark:from-slate-900 to-transparent pointer-events-none z-10" />
+                <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-amber-50/90 dark:from-slate-900 to-transparent pointer-events-none z-10" />
+
+                <div className="overflow-hidden w-full relative">
+                  <div className="animate-marquee font-bold text-xs tracking-wide flex items-center gap-6 whitespace-nowrap" style={{ animationDuration: '22s' }}>
+                    <span className="text-amber-700 dark:text-amber-300 flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping inline-block"></span>
+                      ⚠️ Last Day of Submission : <strong className="underline decoration-amber-500 underline-offset-2 font-extrabold">30-09-2026</strong>
+                    </span>
+                    <span className="text-amber-400/80">•</span>
+                    <span className="text-slate-700 dark:text-slate-200">
+                      📋 Complete and submit all required application steps before the deadline
+                    </span>
+                    <span className="text-amber-400/80">•</span>
+                    <span className="text-blue-700 dark:text-blue-300">
+                      🖨️ Track sheet available after completion
+                    </span>
+                    <span className="text-amber-400/80">•</span>
+                    <span className="text-amber-700 dark:text-amber-300 flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping inline-block"></span>
+                      ⚠️ Last Day of Submission : <strong className="underline decoration-amber-500 underline-offset-2 font-extrabold">30-09-2026</strong>
+                    </span>
+                    <span className="text-amber-400/80">•</span>
+                    <span className="text-slate-700 dark:text-slate-200">
+                      📋 Complete and submit all required application steps before the deadline
+                    </span>
+                    <span className="text-amber-400/80">•</span>
+                    <span className="text-blue-700 dark:text-blue-300">
+                      🖨️ Track sheet available after completion
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

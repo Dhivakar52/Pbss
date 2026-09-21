@@ -298,20 +298,23 @@ export const AdminDataTable: React.FC<AdminDataTableProps> = ({
             <button
               type="button"
               onClick={onAddNew}
-              className="h-9 px-3 bg-[#1677FF] hover:bg-[#0958D9] text-white text-xs font-semibold rounded-lg shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+              className="h-9 px-3 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+              style={{ background: "var(--app-gradient)" }}
             >
-              <Plus className="h-4 w-4" /> Add Record
+              <Plus className="h-4 w-4" />
             </button>
           )}
         </div>
       </div>
 
       {/* ================= CUSTOM FILTER PANEL (TOGGLED VIA FILTER ICON) ================= */}
-      {isFilterPanelVisible && customFilterPanel && (
-        <div className="pt-2 pb-1 border-t border-slate-100 dark:border-slate-800 animate-in fade-in duration-200">
-          {customFilterPanel}
-        </div>
-      )}
+      {
+        isFilterPanelVisible && customFilterPanel && (
+          <div className="pt-2 pb-1 border-t border-slate-100 dark:border-slate-800 animate-in fade-in duration-200">
+            {customFilterPanel}
+          </div>
+        )
+      }
 
       {/* ================= DATA TABLE (STRICT 4TH IMAGE STYLING) ================= */}
       <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
@@ -486,6 +489,6 @@ export const AdminDataTable: React.FC<AdminDataTableProps> = ({
 
       {/* ================= PAGINATION FOOTER FROM COMMON ================= */}
       <Pagination table={tableObject} totalCount={totalRecords} pageSizeOptions={[5, 10, 20, 50]} />
-    </div>
+    </div >
   )
 }
