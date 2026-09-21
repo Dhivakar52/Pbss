@@ -29,18 +29,22 @@ import {
 import { LogOut, ChevronRight, Search, X } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { NavLink, useLocation, useNavigate } from "react-router-dom"
-import { menuConfig } from "@/config/menu.config"
+import { getMenuConfig } from "@/config/menu.config"
 import Logo from "@/assets/images/full-logo.png"
 import { cn } from "@/lib/utils"
 import { toast } from "@/components/ui/toast"
-import { useAuth } from "@/context/AuthContext"
+import { useAuthStore } from "@/store/useAuthStore"
 
 export function AppSidebar() {
   const { state } = useSidebar()
   const isCollapsed = state === "collapsed"
   const location = useLocation()
   const navigate = useNavigate()
-  const { logout } = useAuth()
+  const { user, logout } = useAuthStore()
+
+  const currentMenu = React.useMemo(() => {
+    return getMenuConfig(user?.role)
+  }, [user?.role])
 
   const [search, setSearch] = React.useState("")
   const isSearching = search.trim().length > 0
@@ -64,7 +68,7 @@ export function AppSidebar() {
   // Explicit open-state map, keyed by item title
   const [openItems, setOpenItems] = React.useState<Record<string, boolean>>(() => {
     const initial: Record<string, boolean> = {}
-    menuConfig.forEach((item) => {
+    currentMenu.forEach((item) => {
       if (item.items && isParentActive(item)) {
         initial[item.title] = true
       }
@@ -74,12 +78,12 @@ export function AppSidebar() {
 
   // Auto-expand parent menu when route changes
   React.useEffect(() => {
-    menuConfig.forEach((item) => {
+    currentMenu.forEach((item) => {
       if (item.items && isParentActive(item)) {
         setOpenItems((prev) => ({ ...prev, [item.title]: true }))
       }
     })
-  }, [location.pathname])
+  }, [location.pathname, currentMenu])
 
   const toggleItem = (title: string, next: boolean) => {
     setOpenItems((prev) => ({ ...prev, [title]: next }))
@@ -88,9 +92,9 @@ export function AppSidebar() {
   // Search filtering
   const filteredMenu = React.useMemo(() => {
     const q = search.trim().toLowerCase()
-    if (!q) return menuConfig
+    if (!q) return currentMenu
 
-    return menuConfig
+    return currentMenu
       .map((item) => {
         const titleMatches = item.title.toLowerCase().includes(q)
 
@@ -110,8 +114,8 @@ export function AppSidebar() {
         }
         return null
       })
-      .filter(Boolean) as typeof menuConfig
-  }, [search])
+      .filter(Boolean) as typeof currentMenu
+  }, [search, currentMenu])
 
   const hasResults = filteredMenu.length > 0
 

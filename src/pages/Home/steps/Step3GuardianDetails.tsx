@@ -10,6 +10,7 @@ interface Step3GuardianDetailsProps {
   onClear: () => void
   onSaveAndExit: () => void
   onSaveAndNext: () => void
+  isReadOnly?: boolean
 }
 
 export const Step3GuardianDetails: React.FC<Step3GuardianDetailsProps> = ({
@@ -18,6 +19,7 @@ export const Step3GuardianDetails: React.FC<Step3GuardianDetailsProps> = ({
   onClear,
   onSaveAndExit,
   onSaveAndNext,
+  isReadOnly = false,
 }) => {
   const [showErrors, setShowErrors] = useState(false)
 
@@ -65,7 +67,7 @@ export const Step3GuardianDetails: React.FC<Step3GuardianDetailsProps> = ({
         </div>
       </div>
 
-      <div className="space-y-4">
+      <fieldset disabled={isReadOnly} className={isReadOnly ? "space-y-4 border-none p-0 m-0 disabled:opacity-95" : "space-y-4 border-none p-0 m-0"}>
         {/* Toggle Guardian Applicable */}
         <Field label="Guardian Details (If Applicable)">
           <div className="flex items-center gap-4 text-xs font-medium text-slate-700 mt-1">
@@ -90,22 +92,21 @@ export const Step3GuardianDetails: React.FC<Step3GuardianDetailsProps> = ({
           </div>
         </Field>
 
-        {/* Form Fields arranged in 4-Column Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Field label="Reason" required={guardian.isApplicable} span={4} error={isReasonErr}>
-            <textarea
-              rows={2}
-              placeholder="Reason for specifying guardian"
+        {/* Conditional Form Inputs */}
+        <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 transition-all duration-200 ${
+          !guardian.isApplicable ? 'opacity-40 pointer-events-none' : ''
+        }`}>
+          <Field label="Reason for having Guardian" span={4} required={guardian.isApplicable} error={isReasonErr}>
+            <TextField
+              placeholder="Enter reason"
               disabled={!guardian.isApplicable}
               value={guardian.reason}
-              onChange={(e) => update('reason', e.target.value)}
-              className={`w-full p-2.5 rounded-lg border text-xs focus:outline-none disabled:bg-slate-50 disabled:text-slate-400 ${
-                isReasonErr ? 'border-rose-500 focus:border-rose-500' : 'border-slate-200 focus:border-blue-500'
-              }`}
+              onChange={(val) => update('reason', val)}
+              error={isReasonErr}
             />
           </Field>
 
-          <Field label="Guardian's Gender" required={guardian.isApplicable} error={isGenderErr}>
+          <Field label="Guardian Gender" required={guardian.isApplicable} error={isGenderErr}>
             <SelectField
               placeholder="-- Select --"
               disabled={!guardian.isApplicable}
@@ -116,29 +117,29 @@ export const Step3GuardianDetails: React.FC<Step3GuardianDetailsProps> = ({
             />
           </Field>
 
-          <Field label="Guardian's Name Title" required={guardian.isApplicable} error={isTitleErr}>
+          <Field label="Guardian Title" required={guardian.isApplicable} error={isTitleErr}>
             <SelectField
               placeholder="-- Select --"
               disabled={!guardian.isApplicable}
               value={guardian.title}
               onChange={(val) => update('title', val)}
-              options={['Mr.', 'Mrs.', 'Dr.']}
+              options={['Mr.', 'Mrs.', 'Ms.', 'Dr.']}
               error={isTitleErr}
             />
           </Field>
 
-          <Field label="Guardian's Initials">
+          <Field label="Initials">
             <TextField
-              placeholder="Initials"
+              placeholder="Enter initials"
               disabled={!guardian.isApplicable}
               value={guardian.initials}
               onChange={(val) => update('initials', val)}
             />
           </Field>
 
-          <Field label="Guardian's Name" required={guardian.isApplicable} error={isNameErr}>
+          <Field label="Guardian Name" required={guardian.isApplicable} error={isNameErr}>
             <TextField
-              placeholder="Guardian full name"
+              placeholder="Enter guardian name"
               disabled={!guardian.isApplicable}
               value={guardian.name}
               onChange={(val) => update('name', val)}
@@ -146,15 +147,16 @@ export const Step3GuardianDetails: React.FC<Step3GuardianDetailsProps> = ({
             />
           </Field>
 
-          <Field label="Is Guardian Employed?">
+          {/* Employment Toggle */}
+          <Field label="Is Guardian Employed?" span={4}>
             <div className="flex items-center gap-4 text-xs font-medium text-slate-700 mt-1">
               <label className="flex items-center gap-1.5 cursor-pointer">
                 <input
                   type="radio"
                   name="guardianEmployed"
-                  disabled={!guardian.isApplicable}
                   checked={guardian.isEmployed === true}
                   onChange={() => update('isEmployed', true)}
+                  disabled={!guardian.isApplicable}
                   className="text-blue-600 focus:ring-blue-500"
                 /> Yes
               </label>
@@ -162,9 +164,9 @@ export const Step3GuardianDetails: React.FC<Step3GuardianDetailsProps> = ({
                 <input
                   type="radio"
                   name="guardianEmployed"
-                  disabled={!guardian.isApplicable}
                   checked={guardian.isEmployed === false}
                   onChange={() => update('isEmployed', false)}
+                  disabled={!guardian.isApplicable}
                   className="text-blue-600 focus:ring-blue-500"
                 /> No
               </label>
@@ -181,9 +183,9 @@ export const Step3GuardianDetails: React.FC<Step3GuardianDetailsProps> = ({
             />
           </Field>
 
-          <Field label="Institution/Company Name" required={guardian.isApplicable && guardian.isEmployed} error={isCompErr}>
+          <Field label="Company / Business Name" required={guardian.isApplicable && guardian.isEmployed} error={isCompErr}>
             <TextField
-              placeholder="Company name"
+              placeholder="Enter company name"
               disabled={!guardian.isApplicable || !guardian.isEmployed}
               value={guardian.companyName}
               onChange={(val) => update('companyName', val)}
@@ -191,38 +193,20 @@ export const Step3GuardianDetails: React.FC<Step3GuardianDetailsProps> = ({
             />
           </Field>
 
-          <Field label="Monthly Income (Rs.)" required={guardian.isApplicable && guardian.isEmployed} error={isIncErr}>
+          <Field label="Monthly Income" required={guardian.isApplicable && guardian.isEmployed} error={isIncErr}>
             <SelectField
               placeholder="-- Select --"
               disabled={!guardian.isApplicable || !guardian.isEmployed}
               value={guardian.monthlyIncome}
               onChange={(val) => update('monthlyIncome', val)}
-              options={['Below 50,000', '50,000 - 1,00,000', 'Above 1,00,000']}
+              options={['Below 5 Lakhs', '5-10 Lakhs', '10-15 Lakhs', 'Above 15 Lakhs']}
               error={isIncErr}
             />
           </Field>
 
-          <Field label="Guardian's Phone - Off">
+          <Field label="Mobile Number" required={guardian.isApplicable} error={isMobileErr}>
             <TextField
-              placeholder="Office phone"
-              disabled={!guardian.isApplicable}
-              value={guardian.phoneOff}
-              onChange={(val) => update('phoneOff', val)}
-            />
-          </Field>
-
-          <Field label="Guardian's Phone - Res">
-            <TextField
-              placeholder="Residence phone"
-              disabled={!guardian.isApplicable}
-              value={guardian.phoneRes}
-              onChange={(val) => update('phoneRes', val)}
-            />
-          </Field>
-
-          <Field label="Guardian's Mobile Number" required={guardian.isApplicable} error={isMobileErr}>
-            <TextField
-              placeholder="Mobile number"
+              placeholder="10 digit mobile"
               disabled={!guardian.isApplicable}
               value={guardian.mobileNo}
               onChange={(val) => update('mobileNo', val)}
@@ -230,7 +214,25 @@ export const Step3GuardianDetails: React.FC<Step3GuardianDetailsProps> = ({
             />
           </Field>
 
-          <Field label="Office Address" required={guardian.isApplicable} span={2} error={isAddrErr}>
+          <Field label="Office Phone">
+            <TextField
+              placeholder="STD - Number"
+              disabled={!guardian.isApplicable}
+              value={guardian.phoneOff}
+              onChange={(val) => update('phoneOff', val)}
+            />
+          </Field>
+
+          <Field label="Residence Phone">
+            <TextField
+              placeholder="STD - Number"
+              disabled={!guardian.isApplicable}
+              value={guardian.phoneRes}
+              onChange={(val) => update('phoneRes', val)}
+            />
+          </Field>
+
+          <Field label="Office Address" span={2} required={guardian.isApplicable} error={isAddrErr}>
             <textarea
               rows={2}
               placeholder="Enter office address"
@@ -243,33 +245,36 @@ export const Step3GuardianDetails: React.FC<Step3GuardianDetailsProps> = ({
             />
           </Field>
         </div>
-      </div>
+      </fieldset>
 
       <div className="flex items-center justify-end gap-3 pt-3">
+        {!isReadOnly && (
+          <>
+            <button
+              type="button"
+              onClick={onClear}
+              className="h-9 px-4 rounded-xl text-xs font-semibold border border-slate-300 text-slate-700 hover:bg-slate-100 transition-all cursor-pointer flex items-center gap-1.5 bg-white"
+            >
+              <RotateCcw className="h-3.5 w-3.5" /> Clear
+            </button>
+            <button
+              type="button"
+              onClick={onSaveAndExit}
+              className="h-9 px-4 rounded-xl text-xs font-semibold border border-blue-500 text-[#1677FF] hover:bg-blue-50 transition-all cursor-pointer flex items-center gap-1.5 bg-white"
+            >
+              <Save className="h-3.5 w-3.5" /> Save & Exit
+            </button>
+          </>
+        )}
         <button
           type="button"
-          onClick={onClear}
-          className="h-9 px-4 rounded-xl text-xs font-semibold border border-slate-300 text-slate-700 hover:bg-slate-100 transition-all cursor-pointer flex items-center gap-1.5 bg-white"
-        >
-          <RotateCcw className="h-3.5 w-3.5" /> Clear
-        </button>
-        <button
-          type="button"
-          onClick={onSaveAndExit}
-          className="h-9 px-4 rounded-xl text-xs font-semibold border border-blue-500 text-[#1677FF] hover:bg-blue-50 transition-all cursor-pointer flex items-center gap-1.5 bg-white"
-        >
-          <Save className="h-3.5 w-3.5" /> Save & Exit
-        </button>
-        <button
-          type="button"
-          onClick={handleNext}
+          onClick={isReadOnly ? onSaveAndNext : handleNext}
           className="h-9 px-5 rounded-xl text-xs font-semibold bg-[#1677FF] hover:bg-[#0958D9] text-white shadow-2xs transition-all cursor-pointer flex items-center gap-1.5"
         >
-          Save & Next <ArrowRight className="h-3.5 w-3.5" />
+          {isReadOnly ? 'Next Step' : 'Save & Next'} <ArrowRight className="h-3.5 w-3.5" />
         </button>
       </div>
     </div>
   )
 }
-
 

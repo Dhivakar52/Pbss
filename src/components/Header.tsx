@@ -27,7 +27,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import {
-  Home,
   UserPlus,
   LogOut,
   ChevronDown,
@@ -39,7 +38,7 @@ import {
 } from "lucide-react"
 import { NavLink, useLocation, useNavigate } from "react-router-dom"
 import { useTheme } from "@/context/ThemeContext"
-import { useAuth } from "@/context/AuthContext"
+import { useAuthStore } from "@/store/useAuthStore"
 import { toast } from "@/components/ui/toast"
 import { getMenuConfig, type MenuItem } from "@/config/menu.config"
 import Logo from "@/assets/images/logo.png"
@@ -110,7 +109,7 @@ export function Header({
   breadcrumbItems = []
 }: HeaderProps) {
   const { theme, toggleTheme } = useTheme()
-  const { user, logout } = useAuth()
+  const { user, logout } = useAuthStore()
   const location = useLocation()
   const navigate = useNavigate()
   const [search, setSearch] = useState("")
@@ -196,8 +195,6 @@ export function Header({
   }
 
   const profileMenuItems = [
-    { label: "Dashboard", icon: Home, url: "/dashboard" },
-    { label: "Admission", icon: Home, url: "/admission" },
     { label: "Profile", icon: UserPlus, url: "/profile" },
   ]
 

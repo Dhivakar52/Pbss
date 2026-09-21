@@ -1,7 +1,7 @@
 import { type ReactNode, useEffect, useRef } from "react"
 import { Navigate, useLocation } from "react-router-dom"
 import { toast } from "@/components/ui/toast"
-import { useAuth } from "@/context/AuthContext"
+import { useAuthStore } from "@/store/useAuthStore"
 
 interface ProtectedRoutesProps {
   children: ReactNode
@@ -13,13 +13,14 @@ interface ProtectedRoutesProps {
 
 const ProtectedRoutes = ({
   children,
-  isAuthenticated = false,
+  isAuthenticated,
   redirectTo = "/",
   requiredRoles = [],
   loadingComponent,
 }: ProtectedRoutesProps) => {
   const location = useLocation()
-  const { user } = useAuth() // ✅ user comes from context, not manual localStorage parsing
+  const { user, isAuthenticated: storeAuth } = useAuthStore()
+  const authStatus = isAuthenticated !== undefined ? isAuthenticated : storeAuth
   const hasShownToast = useRef(false)
 
   const userRoles = user?.roles || ["user"]
@@ -28,21 +29,19 @@ const ProtectedRoutes = ({
     requiredRoles.length === 0 ||
     requiredRoles.some((role) => userRoles.includes(role))
 
-  // ✅ Toast only — no localStorage writes here. AuthContext is the
-  // single source of truth for auth state now.
   useEffect(() => {
-    if (!isAuthenticated && !hasShownToast.current) {
+    if (!authStatus && !hasShownToast.current) {
       toast.error("Please login to access this page")
       hasShownToast.current = true
-    } else if (isAuthenticated && !hasRequiredRole && !hasShownToast.current) {
+    } else if (authStatus && !hasRequiredRole && !hasShownToast.current) {
       toast.error("You don't have permission to access this page")
       hasShownToast.current = true
-    } else if (isAuthenticated && hasRequiredRole) {
+    } else if (authStatus && hasRequiredRole) {
       hasShownToast.current = false
     }
-  }, [isAuthenticated, hasRequiredRole])
+  }, [authStatus, hasRequiredRole])
 
-  if (!isAuthenticated) {
+  if (!authStatus) {
     return <Navigate to={redirectTo} state={{ from: location }} replace />
   }
 

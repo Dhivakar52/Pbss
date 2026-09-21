@@ -1,13 +1,16 @@
 import React from 'react'
-import { X, CheckCircle2, Printer } from 'lucide-react'
+import { X, CheckCircle2, Printer, Eye } from 'lucide-react'
 
 interface RegistrationSuccessModalProps {
   isOpen: boolean
   onClose: () => void
   onPrintTrackSheet: () => void
   registrationNo?: string
+  studentId?: string
   submissionDate?: string
   timings?: string
+  onViewDetails?: (id: string) => void
+  isAdminUser?: boolean
 }
 
 export const RegistrationSuccessModal: React.FC<RegistrationSuccessModalProps> = ({
@@ -15,8 +18,11 @@ export const RegistrationSuccessModal: React.FC<RegistrationSuccessModalProps> =
   onClose,
   onPrintTrackSheet,
   registrationNo = 'T25-0003',
+  studentId,
   submissionDate = '14/09/2025',
   timings = '9:00 AM - 11:00 AM',
+  onViewDetails,
+  isAdminUser = false,
 }) => {
   if (!isOpen) return null
 
@@ -67,11 +73,16 @@ export const RegistrationSuccessModal: React.FC<RegistrationSuccessModalProps> =
         <div className="p-6 sm:p-8 pt-4 space-y-5">
           {/* SECTION 1: Registration Details Header */}
           <div className="space-y-1 font-semibold text-sm sm:text-base leading-relaxed text-slate-800 dark:text-slate-200">
-            <p>
-              The Child's Registration Number is{' '}
+            <p className="flex flex-wrap items-center gap-2">
+              <span>The Child's Registration Number is{' '}</span>
               <span className="font-bold text-blue-600 dark:text-blue-400 tracking-wide">
-                {registrationNo}.
+                {registrationNo}
               </span>
+              {isAdminUser && studentId && (
+                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                  Application ID: #{studentId}
+                </span>
+              )}
             </p>
             <p>
               The Tracksheet Submission Date is{' '}
@@ -161,7 +172,20 @@ export const RegistrationSuccessModal: React.FC<RegistrationSuccessModalProps> =
           </div>
 
           {/* Action Button Bar */}
-          <div className="pt-2 flex items-center justify-center gap-3">
+          <div className="pt-2 flex items-center justify-center flex-wrap gap-3">
+            {isAdminUser && studentId && onViewDetails && (
+              <button
+                type="button"
+                onClick={() => {
+                  onClose()
+                  onViewDetails(studentId)
+                }}
+                className="h-9 px-4 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
+              >
+                <Eye className="h-3.5 w-3.5" />
+                <span>View Application Details</span>
+              </button>
+            )}
             <button
               type="button"
               onClick={handlePrintClick}

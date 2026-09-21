@@ -1,4 +1,4 @@
-/* Add this to your global stylesheet (e.g. index.css / globals.css) */
+/* Print Stylesheet */
 
 @media print {
   /* Hide everything on the page by default */
@@ -6,7 +6,9 @@
     visibility: hidden;
   }
 
-  /* Un-hide only the printable card and its children */
+  /* Un-hide printable containers and their children */
+  #printable-application-details,
+  #printable-application-details *,
   #printable-patient-card,
   #printable-patient-card *,
   #printable-discharge-summary,
@@ -14,8 +16,20 @@
     visibility: visible;
   }
 
-  /* Pull the printable card out of the Radix Dialog's centered/fixed
-     positioning and pin it to the top-left of the printed page */
+  /* Pin printable container to top-left of the A4 page */
+  #printable-application-details {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 8mm !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
   #printable-patient-card,
   #printable-discharge-summary {
     position: absolute !important;
@@ -23,13 +37,19 @@
     top: 0 !important;
     width: 100% !important;
     margin: 0 !important;
-    padding: 12mm !important; /* comfortable A4 margin */
+    padding: 12mm !important;
     box-shadow: none !important;
     border: none !important;
   }
 
-  /* Radix Dialog wraps content in an overlay with position:fixed + transform.
-     Reset the whole chain so it doesn't clip/offset the printed content. */
+  /* Hide any non-printable navigation bars, headers, buttons */
+  .no-print,
+  .no-print * {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* Reset Radix / UI dialog overlays during print */
   [data-radix-dialog-overlay],
   [data-radix-dialog-content] {
     position: static !important;
@@ -44,6 +64,6 @@
 
   @page {
     size: A4;
-    margin: 0;
+    margin: 10mm;
   }
 }

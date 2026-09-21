@@ -1,5 +1,5 @@
 import React from 'react'
-import { ArrowLeft, CheckCircle2, Printer } from 'lucide-react'
+import { ArrowLeft, CheckCircle2, Printer, Lock, ChevronRight } from 'lucide-react'
 import type { Step } from '../types'
 
 interface StepSidebarProps {
@@ -9,6 +9,7 @@ interface StepSidebarProps {
   onBackToDashboard: () => void
   backLabel?: string
   onStepSelect: (stepId: number) => void
+  isFromAdmin?: boolean
 }
 
 export const StepSidebar: React.FC<StepSidebarProps> = ({
@@ -18,7 +19,10 @@ export const StepSidebar: React.FC<StepSidebarProps> = ({
   onBackToDashboard,
   backLabel,
   onStepSelect,
+  isFromAdmin = false,
 }) => {
+  const isAllDone = completedStepIds.length === 5
+
   return (
     <div className="space-y-4">
       <button
@@ -48,31 +52,59 @@ export const StepSidebar: React.FC<StepSidebarProps> = ({
           {steps.map((step) => {
             const isActive = activeStepId === step.id
             const isDone = completedStepIds.includes(step.id)
+            const isPrevDone = step.id === 1 || completedStepIds.includes(step.id - 1)
+            const isLocked = !isFromAdmin && !isAllDone && !isPrevDone
 
             return (
               <div
                 key={step.id}
-                onClick={() => onStepSelect(step.id)}
-                className={`flex items-center gap-3 p-3 rounded-xl transition-all cursor-pointer ${
-                  isActive
-                    ? 'bg-[#E6F4FF] dark:bg-blue-950/50 text-[#1677FF] dark:text-blue-400 font-bold shadow-2xs'
-                    : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60'
+                onClick={() => {
+                  if (isLocked) {
+                    return
+                  }
+                  onStepSelect(step.id)
+                }}
+                className={`flex items-center justify-between p-3 rounded-xl transition-all ${
+                  isLocked
+                    ? 'opacity-50 cursor-not-allowed text-slate-400 dark:text-slate-600 bg-slate-50/50 dark:bg-slate-900/40 select-none'
+                    : isActive
+                    ? 'bg-[#E6F4FF] dark:bg-blue-950/50 text-[#1677FF] dark:text-blue-400 font-bold shadow-2xs cursor-pointer'
+                    : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60 cursor-pointer'
                 }`}
               >
-                <div
-                  className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
-                    isDone
-                      ? 'bg-emerald-500 text-white'
-                      : isActive
-                      ? 'bg-[#1677FF] dark:bg-blue-500 text-white'
-                      : 'border border-slate-300 dark:border-slate-700 text-slate-500 dark:text-slate-400'
-                  }`}
-                >
-                  {isDone ? <CheckCircle2 className="h-3.5 w-3.5" /> : step.id}
+                <div className="flex items-center gap-3 min-w-0 pr-2">
+                  <div
+                    className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
+                      isDone
+                        ? 'bg-emerald-500 text-white'
+                        : isActive
+                        ? 'bg-[#1677FF] dark:bg-blue-500 text-white'
+                        : isLocked
+                        ? 'bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500 border border-slate-300 dark:border-slate-700'
+                        : 'border border-slate-300 dark:border-slate-700 text-slate-500 dark:text-slate-400'
+                    }`}
+                  >
+                    {isDone ? (
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                    ) : isLocked ? (
+                      <Lock className="h-3 w-3 text-slate-400" />
+                    ) : (
+                      step.id
+                    )}
+                  </div>
+                  <span className="text-xs font-medium truncate">
+                    {step.title} {step.id === 3 && <span className="text-slate-400 dark:text-slate-500 font-normal text-[11px]">(Optional)</span>}
+                  </span>
                 </div>
-                <span className="text-xs font-medium truncate">
-                  {step.title} {step.id === 3 && <span className="text-slate-400 dark:text-slate-500 font-normal">(Optional)</span>}
-                </span>
+                <div className="shrink-0 flex items-center">
+                  {isLocked ? (
+                    <Lock className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
+                  ) : isDone ? (
+                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                  ) : (
+                    <ChevronRight className={`h-3.5 w-3.5 ${isActive ? 'text-[#1677FF] dark:text-blue-400' : 'text-slate-400 dark:text-slate-500'}`} />
+                  )}
+                </div>
               </div>
             )
           })}

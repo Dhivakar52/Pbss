@@ -1,16 +1,9 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import CustomPanel from '@/common/CustomPanel'
-import { Field, SelectField, TextField } from '@/components/FormPrimitives'
+import { Field, SelectField } from '@/components/FormPrimitives'
 import { AdminDataTable } from '@/components/AdminDataTable'
 import { mockStudents, type StudentRecord } from '@/data/mockStudents'
-import {
-  ALLOWED_REPORT_TYPES,
-  getReportConfig,
-  type ReportFieldConfig,
-} from '@/config/reportConfigs'
-import { PrintPreviewModal } from '@/components/PrintPreviewModal'
-import { createPrintDataFromStudent } from '@/data/mockPrintDatasets'
 import {
   User,
   Briefcase,
@@ -23,14 +16,22 @@ import { toast } from '@/components/ui/toast'
 export const AdminReports: React.FC = () => {
   const navigate = useNavigate()
 
-  // Selected Report Type Key — Default: 'master'
-  const [selectedReportKey, setSelectedReportKey] = useState<string>('master')
+  // Report Selector (Defaults to empty)
+  const [reportType, setReportType] = useState<string>('')
 
-  // Search Executed State (True by default so Master loads automatically on page open)
-  const [isSearched, setIsSearched] = useState<boolean>(true)
-
-  // Dynamic Filter Values dictionary
-  const [filterValues, setFilterValues] = useState<Record<string, string>>({})
+  // Detailed Filter Form state (Defaults to empty - no preselected values)
+  const [academicYear, setAcademicYear] = useState('')
+  const [schoolBranch, setSchoolBranch] = useState('')
+  const [applicationStatus, setApplicationStatus] = useState('')
+  const [playSchool, setPlaySchool] = useState('')
+  const [physicallyChallenged, setPhysicallyChallenged] = useState('')
+  const [gender, setGender] = useState('')
+  const [motherTongue, setMotherTongue] = useState('')
+  const [nationality, setNationality] = useState('')
+  const [alumni, setAlumni] = useState('')
+  const [religion, setReligion] = useState('')
+  const [community, setCommunity] = useState('')
+  const [regNoSearch, setRegNoSearch] = useState('')
 
   // Filter Panel side drawer open state
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false)
@@ -210,7 +211,19 @@ export const AdminReports: React.FC = () => {
 
   // Clear Handler
   const handleClear = () => {
-    setFilterValues({})
+    setReportType('')
+    setAcademicYear('')
+    setSchoolBranch('')
+    setApplicationStatus('')
+    setPlaySchool('')
+    setPhysicallyChallenged('')
+    setGender('')
+    setMotherTongue('')
+    setNationality('')
+    setAlumni('')
+    setReligion('')
+    setCommunity('')
+    setRegNoSearch('')
     setReportData(mockStudents)
     toast.info('Report filters cleared')
   }
@@ -222,10 +235,7 @@ export const AdminReports: React.FC = () => {
 
   // Edit Action Handler
   const handleEdit = (student: StudentRecord) => {
-    localStorage.setItem('editingStudent', JSON.stringify(student))
-    localStorage.setItem('fromAdmin', 'true')
-    toast.success(`Opening Application Details form to edit ${student.studentName}`)
-    navigate('/admission/application-details')
+    navigate(`/admission/${student.id}?mode=edit`)
   }
 
   // Delete Action Handler

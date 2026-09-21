@@ -2,59 +2,62 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from "@/components/ui/button"
 import { Field, TextField } from "@/components/FormPrimitives"
-import { User, Lock, Loader2, LogIn, UserPlus } from "lucide-react"
+import { Mail, Lock, Loader2, LogIn, UserPlus } from "lucide-react"
 import { toast } from "@/components/ui/toast"
-import { useAuth } from "@/context/AuthContext"
+import { useAuthStore } from "@/store/useAuthStore"
+import { validateLoginForm, type LoginFormErrors } from "@/utils/validation"
 import logoImg from "@/assets/images/logo.png"
 
 const Login = () => {
   const navigate = useNavigate()
-  const { login } = useAuth()
+  const { login } = useAuthStore()
 
   // Login form state
-  const [userId, setUserId] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [loginErrors, setLoginErrors] = useState<{ userId?: string; password?: string }>({})
+  const [loginErrors, setLoginErrors] = useState<LoginFormErrors>({})
 
   // Handle Login submission
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const errors: { userId?: string; password?: string } = {}
-    if (!userId.trim()) errors.userId = 'User ID is required'
-    if (!password) errors.password = 'Password is required'
+
+    // Validate using centralized validation utility
+    const errors = validateLoginForm({ email, password })
     setLoginErrors(errors)
 
-    if (Object.keys(errors).length > 0) return
+    if (Object.keys(errors).length > 0) {
+      toast.error('Please correct the errors in the login form.')
+      return
+    }
 
     setIsLoading(true)
-    await new Promise(resolve => setTimeout(resolve, 600))
+    await new Promise(resolve => setTimeout(resolve, 500))
 
-    const cleanUser = userId.trim().toLowerCase()
+    const result = login(email, password)
 
-    if (cleanUser === 'admin' && password === '123') {
-      toast.success('Welcome Administrator! Redirecting to Dashboard...')
-      login({ userId: 'admin', name: 'Administrator', role: 'admin', roles: ['admin'] })
-      navigate('/dashboard')
-    } else if (cleanUser === 'user' && password === '123') {
-      toast.success('Welcome Parent/User! Redirecting...')
-      login({ userId: 'user', name: 'Regular User', role: 'user', roles: ['user'] })
-      navigate('/admission')
+    if (result.success && result.user) {
+      if (result.user.role === 'admin') {
+        toast.success(`Welcome ${result.user.name}! Redirecting to Dashboard...`)
+        navigate('/dashboard')
+      } else {
+        toast.success(`Welcome ${result.user.name}! Redirecting to Admission...`)
+        navigate('/admission')
+      }
     } else {
+      const errorMsg = result.error || 'Invalid Email Address or Password'
       setLoginErrors({
-        userId: 'Invalid User ID or Password',
-        password: 'Try user / 123 or admin / 123'
+        email: errorMsg,
+        password: 'Check your password or credentials',
       })
-      toast.error('Invalid Credentials. Use user/123 or admin/123')
+      toast.error(errorMsg)
     }
+
     setIsLoading(false)
   }
 
   return (
     <div className="min-h-screen w-full bg-[#f0f7ff] flex flex-col font-sans">
-      {/* ================= TOP BAR ================= */}
-
-
       {/* ================= MAIN CONTENT CONTAINER (CENTERED) ================= */}
       <div className="flex-1 flex items-center justify-center p-4 sm:p-6 my-auto">
         {/* ================= LOGIN CARD ================= */}
@@ -76,29 +79,30 @@ const Login = () => {
           </div>
 
           <form onSubmit={handleLoginSubmit} className="space-y-4">
-            {/* User ID Field using FormPrimitives */}
-            <Field label="User ID" required error={!!loginErrors.userId} errorText={loginErrors.userId}>
+            {/* Email Address Field */}
+            <Field label="Email Address" required error={!!loginErrors.email} errorText={loginErrors.email}>
               <TextField
-                id="userId"
-                placeholder="Enter your User ID"
-                value={userId}
+                id="email"
+                type="email"
+                placeholder="e.g. user@gmail.com or admin@gmail.com"
+                value={email}
                 onChange={(val) => {
-                  setUserId(val)
-                  setLoginErrors(prev => ({ ...prev, userId: undefined }))
+                  setEmail(val)
+                  setLoginErrors(prev => ({ ...prev, email: undefined }))
                 }}
-                leftIcon={<User className="h-4 w-4 text-sky-600" />}
-                error={!!loginErrors.userId}
+                leftIcon={<Mail className="h-4 w-4 text-sky-600" />}
+                error={!!loginErrors.email}
                 disabled={isLoading}
-                autoComplete="username"
+                autoComplete="email"
                 className="h-11 border-slate-300 focus:ring-sky-500"
               />
             </Field>
 
-            {/* Password Field using FormPrimitives */}
+            {/* Password Field */}
             <Field label="Password" required error={!!loginErrors.password} errorText={loginErrors.password}>
               <TextField
                 id="password"
-                placeholder="Enter your Password"
+                placeholder="Enter your password"
                 value={password}
                 onChange={(val) => {
                   setPassword(val)
@@ -127,11 +131,41 @@ const Login = () => {
               </a>
             </div>
 
+            {/* Quick Test Credentials Helper Box */}
+            <div className="p-3 rounded-lg bg-sky-50/70 border border-sky-200/80 text-xs space-y-1.5">
+              <p className="font-bold text-slate-700 text-center">Test Credentials (Click to fill):</p>
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmail('user@gmail.com')
+                    setPassword('123')
+                    setLoginErrors({})
+                  }}
+                  className="px-2.5 py-1 bg-white hover:bg-sky-100 border border-sky-300 rounded font-semibold text-sky-800 shadow-2xs transition-colors cursor-pointer"
+                >
+                  User: <span className="font-mono text-blue-700">user@gmail.com</span> / <span className="font-mono text-blue-700">123</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmail('admin@gmail.com')
+                    setPassword('123')
+                    setLoginErrors({})
+                  }}
+                  className="px-2.5 py-1 bg-white hover:bg-sky-100 border border-sky-300 rounded font-semibold text-purple-800 shadow-2xs transition-colors cursor-pointer"
+                >
+                  Admin: <span className="font-mono text-purple-700">admin@gmail.com</span> / <span className="font-mono text-purple-700">123</span>
+                </button>
+              </div>
+            </div>
+
             {/* LOGIN Button */}
             <Button
               type="submit"
               disabled={isLoading}
               className="w-full h-11 btn-app-gradient text-white text-sm font-bold rounded-lg shadow-sm transition-all mt-2 flex items-center justify-center gap-2 cursor-pointer"
+              style={{ background: "var(--app-gradient)" }}
             >
               {isLoading ? (
                 <>
@@ -163,26 +197,6 @@ const Login = () => {
               <UserPlus className="h-4 w-4" />
               CREATE NEW ACCOUNT
             </Button>
-            {/* Demo Credentials Quick Click Helper */}
-            {/* <div className="mt-4 p-3 rounded-lg bg-sky-50/80 border border-sky-200 text-xs text-sky-900 space-y-1.5">
-            <p className="font-bold text-center text-slate-800">Quick Test Credentials:</p>
-            <div className="flex items-center justify-center gap-2">
-              <button
-                type="button"
-                onClick={() => { setUserId('user'); setPassword('123'); setLoginErrors({}); }}
-                className="px-2.5 py-1 bg-white hover:bg-sky-100 border border-sky-300 rounded font-semibold text-sky-800 shadow-2xs transition-colors cursor-pointer"
-              >
-                User: <span className="font-mono text-blue-700">user</span> / <span className="font-mono text-blue-700">123</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => { setUserId('admin'); setPassword('123'); setLoginErrors({}); }}
-                className="px-2.5 py-1 bg-white hover:bg-sky-100 border border-sky-300 rounded font-semibold text-purple-800 shadow-2xs transition-colors cursor-pointer"
-              >
-                Admin: <span className="font-mono text-purple-700">admin</span> / <span className="font-mono text-purple-700">123</span>
-              </button>
-            </div>
-          </div> */}
           </form>
 
           {/* ================= AGE ELIGIBILITY FOOTER ================= */}

@@ -47,6 +47,7 @@ interface Step1ApplicantDetailsProps {
   updateSibling: (index: number, key: keyof Sibling, val: string) => void
   onSaveAndExit: () => void
   onSaveAndNext: () => void
+  isReadOnly?: boolean
 }
 
 const parseDate = (val?: string) => {
@@ -88,6 +89,7 @@ export const Step1ApplicantDetails: React.FC<Step1ApplicantDetailsProps> = ({
   updateSibling,
   onSaveAndExit,
   onSaveAndNext,
+  isReadOnly = false,
 }) => {
   const [showErrors, setShowErrors] = useState(false)
 
@@ -136,7 +138,7 @@ export const Step1ApplicantDetails: React.FC<Step1ApplicantDetailsProps> = ({
       </div>
 
       {/* Stacked Cards One by One */}
-      <div className="space-y-5">
+      <fieldset disabled={isReadOnly} className={isReadOnly ? "space-y-5 border-none p-0 m-0 disabled:opacity-95" : "space-y-5 border-none p-0 m-0"}>
         
         {/* 1. Child Information Card */}
         <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-2xs space-y-4">
@@ -347,13 +349,15 @@ export const Step1ApplicantDetails: React.FC<Step1ApplicantDetailsProps> = ({
                         />
                       </td>
                       <td className="p-1.5 text-center">
-                        <button
-                          type="button"
-                          onClick={() => removeSibling(index)}
-                          className="w-5 h-5 rounded-full text-red-500 hover:bg-red-50 flex items-center justify-center font-bold text-xs cursor-pointer"
-                        >
-                          -
-                        </button>
+                        {!isReadOnly && (
+                          <button
+                            type="button"
+                            onClick={() => removeSibling(index)}
+                            className="w-5 h-5 rounded-full text-red-500 hover:bg-red-50 flex items-center justify-center font-bold text-xs cursor-pointer"
+                          >
+                            -
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))}
@@ -361,15 +365,17 @@ export const Step1ApplicantDetails: React.FC<Step1ApplicantDetailsProps> = ({
               </table>
             </div>
 
-            <div className="md:col-span-4">
-              <button
-                type="button"
-                onClick={addSibling}
-                className="text-xs font-bold text-[#1677FF] hover:underline flex items-center gap-1 cursor-pointer pt-1"
-              >
-                <PlusCircle className="h-3.5 w-3.5" /> Add Sibling
-              </button>
-            </div>
+            {!isReadOnly && (
+              <div className="md:col-span-4">
+                <button
+                  type="button"
+                  onClick={addSibling}
+                  className="text-xs font-bold text-[#1677FF] hover:underline flex items-center gap-1 cursor-pointer pt-1"
+                >
+                  <PlusCircle className="h-3.5 w-3.5" /> Add Sibling
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -414,23 +420,25 @@ export const Step1ApplicantDetails: React.FC<Step1ApplicantDetailsProps> = ({
           </div>
         </div>
 
-      </div>
+      </fieldset>
 
       {/* Action Buttons */}
       <div className="flex items-center justify-end gap-3 pt-3">
+        {!isReadOnly && (
+          <button
+            type="button"
+            onClick={onSaveAndExit}
+            className="h-9 px-4 rounded-xl text-xs font-semibold border border-blue-500 text-[#1677FF] hover:bg-blue-50 transition-all cursor-pointer flex items-center gap-1.5 bg-white"
+          >
+            <Save className="h-3.5 w-3.5" /> Save & Exit
+          </button>
+        )}
         <button
           type="button"
-          onClick={onSaveAndExit}
-          className="h-9 px-4 rounded-xl text-xs font-semibold border border-blue-500 text-[#1677FF] hover:bg-blue-50 transition-all cursor-pointer flex items-center gap-1.5 bg-white"
-        >
-          <Save className="h-3.5 w-3.5" /> Save & Exit
-        </button>
-        <button
-          type="button"
-          onClick={handleNext}
+          onClick={isReadOnly ? onSaveAndNext : handleNext}
           className="h-9 px-5 rounded-xl text-xs font-semibold bg-[#1677FF] hover:bg-[#0958D9] text-white shadow-2xs transition-all cursor-pointer flex items-center gap-1.5"
         >
-          Save & Next <ArrowRight className="h-3.5 w-3.5" />
+          {isReadOnly ? 'Next Step' : 'Save & Next'} <ArrowRight className="h-3.5 w-3.5" />
         </button>
       </div>
     </div>

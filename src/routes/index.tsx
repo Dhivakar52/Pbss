@@ -4,7 +4,7 @@ import { ErrorBoundary } from "react-error-boundary"
 import { routes } from "./routes.config"
 import ProtectedRoutes from "./ProtectedRoutes"
 import { Layout } from "@/layout/Layout"
-import { useAuth } from "@/context/AuthContext"
+import { useAuthStore } from "@/store/useAuthStore"
 import { ErrorFallback } from "@/components/ErrorFallback"
 
 const PageLoader = () => (
@@ -29,7 +29,7 @@ const withRouteErrorBoundary = (children: React.ReactNode, key: string) => (
 
 export const AppRoutes = () => {
   const location = useLocation()
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated } = useAuthStore()
 
   const publicRoutes = routes.filter(route => !route.protected)
   const protectedRoutes = routes.filter(route => route.protected)

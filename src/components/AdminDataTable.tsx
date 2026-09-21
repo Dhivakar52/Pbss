@@ -47,6 +47,7 @@ interface AdminDataTableProps {
   onPrintRegistrationForm?: (record: StudentRecord) => void
   onPrintTrackSheet?: (record: StudentRecord) => void
   onAddNew?: () => void
+  onSelectId?: (record: StudentRecord) => void
   showCheckmarkCols?: boolean
   customFilterPanel?: React.ReactNode
   onExportExcel?: () => void
@@ -70,7 +71,8 @@ export const AdminDataTable: React.FC<AdminDataTableProps> = ({
   onPrintRegistrationForm,
   onPrintTrackSheet,
   onAddNew,
-  showCheckmarkCols = false,
+  onSelectId,
+  showCheckmarkCols = true,
   customFilterPanel,
   onExportExcel,
   onPrint,
@@ -361,20 +363,23 @@ export const AdminDataTable: React.FC<AdminDataTableProps> = ({
             <button
               type="button"
               onClick={onAddNew}
-              className="h-9 px-3 bg-[#1677FF] hover:bg-[#0958D9] text-white text-xs font-semibold rounded-lg shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+              className="h-9 px-3 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+              style={{ background: "var(--app-gradient)" }}
             >
-              <Plus className="h-4 w-4" /> Add Record
+              <Plus className="h-4 w-4" />
             </button>
           )}
         </div>
       </div>
 
-      {/* ================= CUSTOM FILTER PANEL ================= */}
-      {isFilterPanelVisible && customFilterPanel && (
-        <div className="pt-2 pb-1 border-t border-slate-100 dark:border-slate-800 animate-in fade-in duration-200">
-          {customFilterPanel}
-        </div>
-      )}
+      {/* ================= CUSTOM FILTER PANEL (TOGGLED VIA FILTER ICON) ================= */}
+      {
+        isFilterPanelVisible && customFilterPanel && (
+          <div className="pt-2 pb-1 border-t border-slate-100 dark:border-slate-800 animate-in fade-in duration-200">
+            {customFilterPanel}
+          </div>
+        )
+      }
 
       {/* ================= DATA TABLE WITH FROZEN STICKY COLUMNS ================= */}
       <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 relative max-w-full">
@@ -465,13 +470,44 @@ export const AdminDataTable: React.FC<AdminDataTableProps> = ({
                   key={row.id}
                   className="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors border-b border-slate-100 dark:border-slate-800/60"
                 >
-                  <td className="py-3 px-3 text-center font-mono text-slate-500">{startIndex + idx + 1}</td>
-
-                  {/* FROZEN STICKY LEFT CELL: APPLICATION NUMBER / REG NUMBER */}
-                  <td className={`py-3 px-4 border-r border-slate-200 dark:border-slate-800 font-mono font-bold text-blue-700 dark:text-blue-400 whitespace-nowrap ${
-                    disableStickyCols ? '' : 'sticky left-0 z-10 bg-white dark:bg-slate-900 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]'
-                  }`}>
-                    {row.registrationNumber}
+                  <td className="py-3 px-3.5 text-center font-mono text-slate-500">{startIndex + idx + 1}</td>
+                  <td className="py-3 px-4 font-mono font-bold text-blue-700 dark:text-blue-400">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (onSelectId) onSelectId(row)
+                        else if (onView) onView?.(row)
+                      }}
+                      className="hover:underline text-[#1677FF] dark:text-blue-400 font-mono font-bold cursor-pointer text-left inline-flex items-center gap-1.5 group"
+                      title={`Click to view application details for ID ${row.id}`}
+                    >
+                      <span className="group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors">
+                        {row.registrationNumber}
+                      </span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900 font-mono font-semibold">
+                        {row.id}
+                      </span>
+                    </button>
+                  </td>
+                  <td className="py-3 px-4 font-bold text-slate-900 dark:text-white">{row.studentName}</td>
+                  <td className="py-3 px-4 text-slate-600 dark:text-slate-400">{row.fatherName}</td>
+                  <td className="py-3 px-4">{row.schoolBranch}</td>
+                  <td className="py-3 px-4 text-slate-500">{row.area}, {row.city}</td>
+                  <td className="py-3 px-4 text-center">
+                    <span
+                      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold ${row.applicationStatus === 'Declared'
+                        ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400 border border-emerald-200'
+                        : row.applicationStatus === 'Approved'
+                          ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-400 border border-blue-200'
+                          : row.applicationStatus === 'Pending'
+                            ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-400 border border-amber-200'
+                            : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
+                        }`}
+                    >
+                      {row.applicationStatus === 'Declared' && <CheckCircle2 className="h-3 w-3" />}
+                      {row.applicationStatus === 'Pending' && <Clock className="h-3 w-3" />}
+                      {row.applicationStatus}
+                    </span>
                   </td>
 
                   {/* DYNAMIC REPORT CELLS FROM JSON CONFIG */}
@@ -600,7 +636,7 @@ export const AdminDataTable: React.FC<AdminDataTableProps> = ({
 
       {/* ================= PAGINATION FOOTER FROM COMMON ================= */}
       <Pagination table={tableObject} totalCount={totalRecords} pageSizeOptions={[5, 10, 20, 50]} />
-    </div>
+    </div >
   )
 }
 
