@@ -15,7 +15,8 @@ import {
   Trash2,
   Filter,
   FileSpreadsheet,
-  Printer
+  Printer,
+  FileText
 } from 'lucide-react'
 import {
   DropdownMenu,
@@ -53,6 +54,8 @@ interface AdminDataTableProps {
   onExportExcel?: () => void
   onPrint?: () => void
   onToggleFilterPanel?: () => void
+  onPrintTrackSheet?: (record: T) => void
+  onPrintRegistrationForm?: (record: T) => void
 }
 
 // Width constants for frozen left and right columns
@@ -87,6 +90,8 @@ export function AdminDataTable<T extends Record<string, any>>({
   onExportExcel,
   onPrint,
   onToggleFilterPanel,
+  onPrintTrackSheet,
+  onPrintRegistrationForm,
 }: AdminDataTableProps<T>) {
   // Search & Filter States
   const [internalSearchTerm, setInternalSearchTerm] = useState('')
@@ -833,7 +838,7 @@ export function AdminDataTable<T extends Record<string, any>>({
                                   </button>
                                 }
                               />
-                              <DropdownMenuContent align="end" className="w-36 p-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl rounded-xl text-xs">
+                              <DropdownMenuContent align="end" className="w-56 p-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl rounded-xl text-xs">
                                 {onView && (
                                   <DropdownMenuItem
                                     onClick={() => onView(row)}
@@ -851,6 +856,22 @@ export function AdminDataTable<T extends Record<string, any>>({
                                     className="cursor-pointer py-2 px-2.5 rounded-lg flex items-center gap-2 font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
                                   >
                                     <Edit3 className="h-3.5 w-3.5 text-emerald-600" /> Edit
+                                  </DropdownMenuItem>
+                                )}
+                                {onPrintTrackSheet && (
+                                  <DropdownMenuItem
+                                    onClick={() => onPrintTrackSheet(row)}
+                                    className="cursor-pointer py-2 px-2.5 rounded-lg flex items-center gap-2 font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+                                  >
+                                    <FileText className="h-3.5 w-3.5 text-indigo-600" /> Print Track Sheet
+                                  </DropdownMenuItem>
+                                )}
+                                {onPrintRegistrationForm && (
+                                  <DropdownMenuItem
+                                    onClick={() => onPrintRegistrationForm(row)}
+                                    className="cursor-pointer py-2 px-2.5 rounded-lg flex items-center gap-2 font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+                                  >
+                                    <Printer className="h-3.5 w-3.5 text-amber-600" /> Print Registration Form
                                   </DropdownMenuItem>
                                 )}
                                 {onDelete && (
@@ -945,7 +966,7 @@ export function AdminDataTable<T extends Record<string, any>>({
                                   </button>
                                 }
                               />
-                              <DropdownMenuContent align="end" className="w-36 p-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl rounded-xl text-xs">
+                              <DropdownMenuContent align="end" className="w-56 p-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl rounded-xl text-xs">
                                 {onView && (
                                   <DropdownMenuItem
                                     onClick={() => onView(row)}
@@ -963,6 +984,22 @@ export function AdminDataTable<T extends Record<string, any>>({
                                     className="cursor-pointer py-2 px-2.5 rounded-lg flex items-center gap-2 font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
                                   >
                                     <Edit3 className="h-3.5 w-3.5 text-emerald-600" /> Edit
+                                  </DropdownMenuItem>
+                                )}
+                                {onPrintTrackSheet && (
+                                  <DropdownMenuItem
+                                    onClick={() => onPrintTrackSheet(row)}
+                                    className="cursor-pointer py-2 px-2.5 rounded-lg flex items-center gap-2 font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+                                  >
+                                    <FileText className="h-3.5 w-3.5 text-indigo-600" /> Print Track Sheet
+                                  </DropdownMenuItem>
+                                )}
+                                {onPrintRegistrationForm && (
+                                  <DropdownMenuItem
+                                    onClick={() => onPrintRegistrationForm(row)}
+                                    className="cursor-pointer py-2 px-2.5 rounded-lg flex items-center gap-2 font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+                                  >
+                                    <Printer className="h-3.5 w-3.5 text-amber-600" /> Print Registration Form
                                   </DropdownMenuItem>
                                 )}
                                 {onDelete && (
