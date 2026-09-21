@@ -10,6 +10,7 @@ import {
 import { toast } from '@/components/ui/toast'
 import { AdminDataTable } from '@/components/AdminDataTable'
 import { Field, SelectField } from '@/components/FormPrimitives'
+import { PrintPreviewModal } from '@/components/print'
 
 export const AdminStudents: React.FC = () => {
   const navigate = useNavigate()
@@ -143,6 +144,27 @@ export const AdminStudents: React.FC = () => {
     setDeletingStudent(null)
   }
 
+  // 4. Print Preview Modal State & Handlers
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false)
+  const [previewDocType, setPreviewDocType] = useState<'track-sheet' | 'registration-form'>('track-sheet')
+  const [selectedStudentForPrint, setSelectedStudentForPrint] = useState<any | null>(null)
+
+  const handlePrintTrackSheet = (student: StudentRecord) => {
+    // Reusing the same admission data source: fetch complete record from store
+    const fullRecord = useStudentStore.getState().getStudentById(student.id) || student
+    setSelectedStudentForPrint(fullRecord)
+    setPreviewDocType('track-sheet')
+    setIsPreviewModalOpen(true)
+  }
+
+  const handlePrintRegistrationForm = (student: StudentRecord) => {
+    // Reusing the same admission data source: fetch complete record from store
+    const fullRecord = useStudentStore.getState().getStudentById(student.id) || student
+    setSelectedStudentForPrint(fullRecord)
+    setPreviewDocType('registration-form')
+    setIsPreviewModalOpen(true)
+  }
+
   return (
     <div className="space-y-6">
       {/* DATA TABLE WITH INTEGRATED CUSTOM FILTER PANEL VIA POPOVER FILTER ICON */}
@@ -157,6 +179,8 @@ export const AdminStudents: React.FC = () => {
           navigate('/admission/add')
         }}
         onDelete={(student) => setDeletingStudent(student)}
+        onPrintTrackSheet={handlePrintTrackSheet}
+        onPrintRegistrationForm={handlePrintRegistrationForm}
         showCheckmarkCols={true}
         onToggleFilterPanel={() => setIsFilterPanelOpen(true)}
         onExportExcel={() => toast.success("Exported Student Master List to Excel")}
@@ -369,6 +393,14 @@ export const AdminStudents: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* ================= PRINT PREVIEW MODAL (TRACK SHEET & REGISTRATION FORM) ================= */}
+      <PrintPreviewModal
+        isOpen={isPreviewModalOpen}
+        onClose={() => setIsPreviewModalOpen(false)}
+        documentType={previewDocType}
+        student={selectedStudentForPrint}
+      />
     </div>
   )
 }
