@@ -420,6 +420,78 @@ export default function HomeModule() {
         }
     }
 
+    const STORAGE_KEY = 'pbss_completed_registration'
+
+    const buildRegistrationDataObject = (): PrintDocumentData => ({
+        registration: {
+            registrationNo: applicationNo,
+            branchApplied: 'T.NAGAR-PSBB',
+            dateOfBirth: dob,
+            childName,
+            gender,
+            nationality,
+            community,
+            motherTongue,
+            religion,
+            caste,
+            passportNo: '',
+            isHealthy,
+            majorAilment,
+            childGoesToSchool,
+            prevSchool,
+            hasSiblings,
+        },
+        father,
+        mother,
+        guardian,
+        address: {
+            residentialAddress: comm.address,
+            pincode: comm.pincode,
+            residencePhone: comm.residencePhone,
+            landmark: comm.landmark,
+            distanceFromResidence: comm.distanceKm,
+            modeOfTransport: comm.commuteMode,
+            parentAchievements: comm.parentAchievements,
+            isTransferFromOutside: comm.isTransferFromOutside,
+        },
+        siblings,
+        photos: {
+            child: '',
+            father: '',
+            mother: '',
+            guardian: '',
+        },
+        signatures: {
+            father: '',
+            mother: '',
+            guardian: '',
+        },
+        submission: {
+            date: '14/09/2025',
+            timings: '9:00 AM - 11:00 AM',
+            branch: 'T.Nagar',
+        },
+    })
+
+    const saveCompletedToLocalStorage = (dataToSave: PrintDocumentData) => {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave))
+        } catch (err) {
+            console.error('Failed to save completed registration to localStorage:', err)
+        }
+    }
+
+    const getCompletedFromLocalStorage = (): PrintDocumentData | null => {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY)
+            if (raw) {
+                return JSON.parse(raw) as PrintDocumentData
+            }
+        } catch (err) {
+            console.error('Error parsing stored registration from localStorage:', err)
+        }
+        return null
+    }
     const handleStepClick = (stepId: number) => {
         if (stepId > 1 && !fromAdmin && !isRegistrationComplete) {
             const isPrevDone = stepId === 1 || completedStepIds.includes(stepId - 1)
@@ -544,6 +616,7 @@ export default function HomeModule() {
         }
 
         toast.success(`${rawSteps[currentStepId - 1].title} saved successfully!`)
+
         if (currentStepId < 5) {
             const nextSlug = stepIdToSlug[currentStepId + 1]
             if (id) {
@@ -616,6 +689,10 @@ export default function HomeModule() {
         // const saved = saveStudentRecord(isCreateMode)
         setIsSuccessModalOpen(true)
         toast.success('All 5 registration steps completed!')
+
+        // Persist full completed registration object to localStorage
+        const completedData = buildRegistrationDataObject()
+        saveCompletedToLocalStorage(completedData)
     }
 
     const handleReset = () => {
@@ -623,6 +700,12 @@ export default function HomeModule() {
         setIsDeclared(false)
         setIsSuccessModalOpen(false)
         setIsStep3Saved(false)
+
+        try {
+            localStorage.removeItem(STORAGE_KEY)
+        } catch (e) {
+            console.error('Failed to remove stored registration key:', e)
+        }
 
         // Clear all fields
         setChildName('')
@@ -667,13 +750,24 @@ export default function HomeModule() {
         toast.info('Registration form reset completely.')
     }
 
+    // Print Modal State
+    const [printDocType, setPrintDocType] = useState<'registrationForm' | 'trackSheet' | null>(null)
+    const [isPrintModalOpen, setIsPrintModalOpen] = useState<boolean>(false)
+    const [activePrintData, setActivePrintData] = useState<PrintDocumentData | null>(null)
+
     const handlePrintTrackSheet = () => {
-        if (!isRegistrationComplete) {
+        const storedData = getCompletedFromLocalStorage()
+        const currentData = buildRegistrationDataObject()
+        const dataToPrint = storedData || (isRegistrationComplete ? currentData : currentData)
+
+        if (!isRegistrationComplete && !storedData) {
             toast.error('Registration must be completed before printing Track Sheet.')
             return
         }
-        toast.success('Printing Track Sheet...')
-        window.print()
+
+        setActivePrintData(dataToPrint)
+        setPrintDocType('trackSheet')
+        setIsPrintModalOpen(true)
     }
 
     const handlePrintRegistrationForm = () => {
@@ -1005,6 +1099,17 @@ export default function HomeModule() {
                 submissionDate="14/09/2025"
                 timings="9:00 AM - 11:00 AM"
                 isAdminUser={isAdminUser}
+            />
+
+            {/* PRINT PREVIEW & PRINT MODAL */}
+            <PrintPreviewModal
+                documentType={printDocType}
+                data={activePrintData || buildRegistrationDataObject()}
+                isOpen={isPrintModalOpen}
+                onClose={() => {
+                    setIsPrintModalOpen(false)
+                    setPrintDocType(null)
+                }}
             />
 
         </div>
